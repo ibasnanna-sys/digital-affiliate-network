@@ -1,3 +1,5 @@
+import "./globals.css";
+
 export const metadata = {
   title: "Digital Affiliate Network",
   description: "Bangun Jaringan, Raih Penghasilan",
