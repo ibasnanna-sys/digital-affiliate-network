@@ -1,449 +1,59 @@
-export default function Home() {
+"use client";
+
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        background:
-          'linear-gradient(to bottom right, #0f172a, #000000, #164e63)',
-        color: 'white',
-        fontFamily: 'Arial',
-      }}
-    >
-      {/* NAVBAR */}
-      <nav
-        style={{
-          padding: '20px 30px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
-          position: 'sticky',
-          top: 0,
-          background: 'rgba(0,0,0,0.6)',
-          backdropFilter: 'blur(10px)',
-        }}
-      >
-        <h2
-          style={{
-            color: '#22d3ee',
-            margin: 0,
-          }}
-        >
+    <nav className="w-full border-b border-cyan-500/20 bg-black/90 backdrop-blur sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        {/* Logo */}
+        <h1 className="text-cyan-400 font-bold text-2xl">
           DAN
-        </h2>
+        </h1>
 
-        <div
-          style={{
-            display: 'flex',
-            gap: '15px',
-            alignItems: 'center',
-          }}
-        >
-          <span>Home</span>
-<span>Paket</span>
-<span>Referral</span>
-<span>Login</span>
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-6 text-sm">
+          <a href="#" className="hover:text-cyan-400">Home</a>
+          <a href="#" className="hover:text-cyan-400">Paket</a>
+          <a href="#" className="hover:text-cyan-400">Referral</a>
 
-<button
-  style={{
-    background: '#22d3ee',
-    color: 'black',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '12px',
-    fontWeight: 'bold',
-  }}
->
-  Register
-</button>
-
-          <button
-            style={{
-              background: '#22d3ee',
-              color: 'black',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '12px',
-              fontWeight: 'bold',
-            }}
-          >
+          <button className="border border-cyan-400 px-4 py-2 rounded-xl hover:bg-cyan-400 hover:text-black transition">
             Login
           </button>
-        </div>
-      </nav>
 
-      {/* HERO */}
-      <section
-        style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '60px 20px',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))',
-          gap: '40px',
-          alignItems: 'center',
-        }}
-      >
-        <div>
-          <p
-            style={{
-              color: '#22d3ee',
-              letterSpacing: '4px',
-              marginBottom: '20px',
-            }}
-          >
-            DIGITAL AFFILIATE NETWORK
-          </p>
-
-          <h1
-            style={{
-              fontSize: '60px',
-              lineHeight: '1.1',
-              marginBottom: '25px',
-            }}
-          >
-            Pakai Sendiri,
-            <span style={{ color: '#22d3ee' }}>
-              {' '}Bonus Mengalir
-            </span>
-          </h1>
-
-          <p
-            style={{
-              color: '#cbd5e1',
-              fontSize: '20px',
-              lineHeight: '1.8',
-              marginBottom: '40px',
-            }}
-          >
-            Platform layanan digital modern untuk paket data,
-            pulsa, PPOB, dan referral reward otomatis.
-          </p>
-
-          <div
-            style={{
-              display: 'flex',
-              gap: '15px',
-              flexWrap: 'wrap',
-            }}
-          >
-            <button
-              style={{
-                background: '#22d3ee',
-                color: 'black',
-                border: 'none',
-                padding: '16px 30px',
-                borderRadius: '18px',
-                fontWeight: 'bold',
-                fontSize: '16px',
-              }}
-            >
-              Daftar Sekarang
-            </button>
-
-            <button
-              style={{
-                background: 'transparent',
-                color: '#22d3ee',
-                border: '1px solid #22d3ee',
-                padding: '16px 30px',
-                borderRadius: '18px',
-                fontWeight: 'bold',
-                fontSize: '16px',
-              }}
-            >
-              Pelajari Sistem
-            </button>
-          </div>
+          <button className="bg-cyan-400 text-black px-4 py-2 rounded-xl font-semibold hover:bg-cyan-300 transition">
+            Register
+          </button>
         </div>
 
-        {/* BONUS CARD */}
-        <div
-          style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(34,211,238,0.2)',
-            borderRadius: '30px',
-            padding: '35px',
-            backdropFilter: 'blur(10px)',
-          }}
-        >
-          <h2
-            style={{
-              color: '#22d3ee',
-              marginBottom: '30px',
-              fontSize: '30px',
-            }}
-          >
-            Bonus Referral
-          </h2>
-
-          {[
-            ['Paket Data', '20%'],
-            ['Pulsa & Top Up', '10%'],
-            ['PPOB', '5%'],
-          ].map((item, index) => (
-            <div
-              key={index}
-              style={{
-                background: 'rgba(0,0,0,0.4)',
-                padding: '20px',
-                borderRadius: '20px',
-                marginBottom: '15px',
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}
-            >
-              <span>{item[0]}</span>
-
-              <span
-                style={{
-                  color: '#22d3ee',
-                  fontWeight: 'bold',
-                }}
-              >
-                {item[1]}
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* PRODUK */}
-      <section
-        style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '20px',
-        }}
-      >
-        <h2
-          style={{
-            fontSize: '40px',
-            marginBottom: '30px',
-            color: '#22d3ee',
-          }}
-        >
-          Produk Digital
-        </h2>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit,minmax(250px,1fr))',
-            gap: '25px',
-          }}
-        >
-          {[
-            ['XL Flex Max', 'Mulai Rp35.000'],
-            ['Pulsa All Operator', 'Harga Murah'],
-            ['Top Up Game', 'Fast Process'],
-            ['PPOB', 'Tagihan Lengkap'],
-          ].map((item, index) => (
-            <div
-              key={index}
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                padding: '30px',
-                borderRadius: '25px',
-                border: '1px solid rgba(255,255,255,0.1)',
-              }}
-            >
-              <h3
-                style={{
-                  color: '#22d3ee',
-                  marginBottom: '15px',
-                }}
-              >
-                {item[0]}
-              </h3>
-
-              <p
-                style={{
-                  color: '#cbd5e1',
-                }}
-              >
-                {item[1]}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section
-  style={{
-    maxWidth: '1200px',
-    margin: '80px auto',
-    padding: '20px',
-  }}
->
-  <div
-    style={{
-      background: 'rgba(255,255,255,0.05)',
-      border: '1px solid rgba(34,211,238,0.2)',
-      borderRadius: '30px',
-      padding: '40px',
-      backdropFilter: 'blur(10px)',
-    }}
-  >
-    <h2
-      style={{
-        color: '#22d3ee',
-        fontSize: '40px',
-        marginBottom: '30px',
-        textAlign: 'center',
-      }}
-    >
-      Member Area
-    </h2>
-
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))',
-        gap: '30px',
-      }}
-    >
-      {/* LOGIN */}
-      <div>
-        <h3
-          style={{
-            marginBottom: '20px',
-          }}
-        >
-          Login Member
-        </h3>
-
-        <input
-          placeholder="Nomor WhatsApp"
-          style={{
-            width: '100%',
-            padding: '15px',
-            marginBottom: '15px',
-            borderRadius: '15px',
-            border: 'none',
-            background: '#0f172a',
-            color: 'white',
-          }}
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          style={{
-            width: '100%',
-            padding: '15px',
-            marginBottom: '15px',
-            borderRadius: '15px',
-            border: 'none',
-            background: '#0f172a',
-            color: 'white',
-          }}
-        />
-
+        {/* Mobile Button */}
         <button
-          style={{
-            width: '100%',
-            padding: '15px',
-            background: '#22d3ee',
-            color: 'black',
-            border: 'none',
-            borderRadius: '15px',
-            fontWeight: 'bold',
-          }}
+          onClick={() => setOpen(!open)}
+          className="md:hidden text-cyan-400"
         >
-          Login
+          {open ? <X size={30} /> : <Menu size={30} />}
         </button>
       </div>
 
-      {/* REGISTER */}
-      <div>
-        <h3
-          style={{
-            marginBottom: '20px',
-          }}
-        >
-          Register Member
-        </h3>
+      {/* Mobile Menu */}
+      {open && (
+        <div className="md:hidden px-4 pb-4 flex flex-col gap-4 bg-black border-t border-cyan-500/20">
+          <a href="#" className="hover:text-cyan-400">Home</a>
+          <a href="#" className="hover:text-cyan-400">Paket</a>
+          <a href="#" className="hover:text-cyan-400">Referral</a>
 
-        <input
-          placeholder="Nama Lengkap"
-          style={{
-            width: '100%',
-            padding: '15px',
-            marginBottom: '15px',
-            borderRadius: '15px',
-            border: 'none',
-            background: '#0f172a',
-            color: 'white',
-          }}
-        />
+          <button className="border border-cyan-400 py-2 rounded-xl hover:bg-cyan-400 hover:text-black transition">
+            Login
+          </button>
 
-        <input
-          placeholder="Nomor WhatsApp"
-          style={{
-            width: '100%',
-            padding: '15px',
-            marginBottom: '15px',
-            borderRadius: '15px',
-            border: 'none',
-            background: '#0f172a',
-            color: 'white',
-          }}
-        />
-
-        <input
-          placeholder="Kode Referral"
-          style={{
-            width: '100%',
-            padding: '15px',
-            marginBottom: '15px',
-            borderRadius: '15px',
-            border: 'none',
-            background: '#0f172a',
-            color: 'white',
-          }}
-        />
-
-        <button
-          style={{
-            width: '100%',
-            padding: '15px',
-            background: '#22d3ee',
-            color: 'black',
-            border: 'none',
-            borderRadius: '15px',
-            fontWeight: 'bold',
-          }}
-        >
-          Register
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
-      {/* FOOTER */}
-      <footer
-        style={{
-          marginTop: '80px',
-          padding: '40px',
-          textAlign: 'center',
-          borderTop: '1px solid rgba(255,255,255,0.1)',
-          color: '#94a3b8',
-        }}
-      >
-        <h3
-          style={{
-            color: 'white',
-          }}
-        >
-          Digital Affiliate Network
-        </h3>
-
-        <p>
-          Platform layanan digital modern dengan sistem referral sederhana.
-        </p>
-      </footer>
-    </main>
-  )
+          <button className="bg-cyan-400 text-black py-2 rounded-xl font-semibold hover:bg-cyan-300 transition">
+            Register
+          </button>
+        </div>
+      )}
+    </nav>
+  );
 }
