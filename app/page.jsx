@@ -40,8 +40,22 @@ export default function Home() {
           }}
         >
           <span>Home</span>
-          <span>Paket</span>
-          <span>Referral</span>
+<span>Paket</span>
+<span>Referral</span>
+<span>Login</span>
+
+<button
+  style={{
+    background: '#22d3ee',
+    color: 'black',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '12px',
+    fontWeight: 'bold',
+  }}
+>
+  Register
+</button>
 
           <button
             style={{
