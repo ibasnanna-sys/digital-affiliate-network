@@ -203,6 +203,50 @@ export default function Home() {
   </div>
 
 </section>
+
+      {/* CTA */}
+<section className="px-6 pb-20">
+
+  <div className="bg-cyan-400 text-black rounded-3xl p-8 text-center">
+
+    <p className="font-semibold tracking-[3px] mb-4">
+      MULAI SEKARANG
+    </p>
+
+    <h2 className="text-4xl font-bold leading-tight">
+      Bangun Jaringan Digital
+      <br />
+      Bersama DAN
+    </h2>
+
+    <p className="mt-6 text-lg">
+      Daftar gratis dan mulai hasilkan bonus referral dari transaksi member.
+    </p>
+
+    <button className="mt-8 bg-black text-white px-8 py-4 rounded-2xl font-bold">
+      Register Member
+    </button>
+
+  </div>
+
+</section>
+
+{/* Footer */}
+<footer className="px-6 pb-10 text-center text-zinc-500 border-t border-cyan-500/10 pt-8">
+
+  <h3 className="text-cyan-400 text-2xl font-bold mb-3">
+    DAN
+  </h3>
+
+  <p>
+    Digital Affiliate Network
+  </p>
+
+  <p className="mt-2 text-sm">
+    Bangun Jaringan, Raih Penghasilan
+  </p>
+
+</footer>
       
     </main>
   );
