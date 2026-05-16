@@ -141,6 +141,68 @@ export default function Home() {
   </div>
 
 </section>
+
+      {/* Bonus Referral */}
+<section className="px-6 pb-20">
+
+  <div className="bg-gradient-to-br from-cyan-500/10 to-transparent border border-cyan-500/20 rounded-3xl p-8">
+
+    <p className="text-cyan-400 tracking-[4px] text-sm mb-4">
+      BONUS REFERRAL
+    </p>
+
+    <h2 className="text-4xl font-bold leading-tight">
+      Semakin Aktif Jaringan,
+      <br />
+      Semakin Besar Bonus
+    </h2>
+
+    <div className="mt-10 space-y-5">
+
+      <div>
+        <div className="flex justify-between mb-2">
+          <span>Paket Data</span>
+          <span className="text-cyan-400 font-bold">
+            20%
+          </span>
+        </div>
+
+        <div className="h-3 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="h-full w-[20%] bg-cyan-400 rounded-full"></div>
+        </div>
+      </div>
+
+      <div>
+        <div className="flex justify-between mb-2">
+          <span>Pulsa & Top Up</span>
+          <span className="text-cyan-400 font-bold">
+            10%
+          </span>
+        </div>
+
+        <div className="h-3 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="h-full w-[10%] bg-cyan-400 rounded-full"></div>
+        </div>
+      </div>
+
+      <div>
+        <div className="flex justify-between mb-2">
+          <span>PPOB</span>
+          <span className="text-cyan-400 font-bold">
+            5%
+          </span>
+        </div>
+
+        <div className="h-3 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="h-full w-[5%] bg-cyan-400 rounded-full"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
       
     </main>
   );
