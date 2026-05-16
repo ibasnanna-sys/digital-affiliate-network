@@ -21,6 +21,35 @@
 // const nextConfig = {}
 // export default nextConfig
 
+// FILE: app/layout.jsx
+// ----------------------------------
+// export const metadata = {
+//   title: 'Digital Affiliate Network',
+//   description: 'Platform layanan digital modern',
+// }
+//
+// export default function RootLayout({ children }) {
+//   return (
+//     <html lang="id">
+//       <body>{children}</body>
+//     </html>
+//   )
+// }
+
+// FILE: app/globals.css
+// ----------------------------------
+// @tailwind base;
+// @tailwind components;
+// @tailwind utilities;
+//
+// body {
+//   margin: 0;
+//   padding: 0;
+//   background: black;
+//   color: white;
+//   font-family: Arial, sans-serif;
+// }
+
 // FILE: app/page.jsx
 // ----------------------------------
 
