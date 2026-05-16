@@ -1,157 +1,149 @@
-export default function DigitalAffiliateNetwork() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-black text-white font-sans">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-black to-cyan-900 px-6 py-20">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <p className="text-cyan-400 uppercase tracking-[4px] text-sm mb-4">
-              Digital Affiliate Network
-            </p>
+    <main
+      style={{
+        minHeight: '100vh',
+        background:
+          'linear-gradient(to bottom right, #0f172a, #000000, #164e63)',
+        color: 'white',
+        fontFamily: 'Arial',
+      }}
+    >
+      <section
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '60px 20px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))',
+          gap: '40px',
+          alignItems: 'center',
+        }}
+      >
+        <div>
+          <p
+            style={{
+              color: '#22d3ee',
+              letterSpacing: '4px',
+              marginBottom: '20px',
+            }}
+          >
+            DIGITAL AFFILIATE NETWORK
+          </p>
 
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
-              Pakai Sendiri,
-              <span className="text-cyan-400"> Bonus Mengalir</span>
-            </h1>
+          <h1
+            style={{
+              fontSize: '60px',
+              lineHeight: '1.1',
+              marginBottom: '25px',
+            }}
+          >
+            Pakai Sendiri,
+            <span style={{ color: '#22d3ee' }}>
+              {' '}Bonus Mengalir
+            </span>
+          </h1>
 
-            <p className="text-gray-300 text-lg leading-relaxed mb-8">
-              Platform layanan digital modern untuk kebutuhan harian seperti
-              paket data, pulsa, top up game, dan PPOB dengan sistem referral
-              sederhana dan transparan.
-            </p>
+          <p
+            style={{
+              color: '#cbd5e1',
+              fontSize: '20px',
+              lineHeight: '1.8',
+              marginBottom: '40px',
+            }}
+          >
+            Platform layanan digital modern untuk paket data,
+            pulsa, PPOB, dan referral reward otomatis.
+          </p>
 
-            <div className="flex flex-wrap gap-4">
-              <button className="bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-6 py-3 rounded-2xl shadow-lg shadow-cyan-500/30 transition-all">
-                Daftar Sekarang
-              </button>
+          <div
+            style={{
+              display: 'flex',
+              gap: '15px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <button
+              style={{
+                background: '#22d3ee',
+                color: 'black',
+                border: 'none',
+                padding: '16px 30px',
+                borderRadius: '18px',
+                fontWeight: 'bold',
+                fontSize: '16px',
+                cursor: 'pointer',
+              }}
+            >
+              Daftar Sekarang
+            </button>
 
-              <button className="border border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 px-6 py-3 rounded-2xl transition-all">
-                Pelajari Sistem
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-white/5 backdrop-blur-xl border border-cyan-500/20 rounded-3xl p-8 shadow-2xl shadow-cyan-500/10">
-            <h2 className="text-2xl font-bold mb-6 text-cyan-400">
-              Bonus Referral
-            </h2>
-
-            <div className="space-y-4">
-              <div className="bg-black/40 rounded-2xl p-4 flex justify-between items-center">
-                <span>Paket Data</span>
-                <span className="text-cyan-400 font-bold">20%</span>
-              </div>
-
-              <div className="bg-black/40 rounded-2xl p-4 flex justify-between items-center">
-                <span>Pulsa & Top Up</span>
-                <span className="text-cyan-400 font-bold">10%</span>
-              </div>
-
-              <div className="bg-black/40 rounded-2xl p-4 flex justify-between items-center">
-                <span>PPOB</span>
-                <span className="text-cyan-400 font-bold">5%</span>
-              </div>
-            </div>
-
-            <div className="mt-8 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl p-5">
-              <p className="text-sm text-gray-300">
-                Member aktif cukup dengan membeli paket aktivasi dan menggunakan layanan seperti biasa.
-              </p>
-            </div>
+            <button
+              style={{
+                background: 'transparent',
+                color: '#22d3ee',
+                border: '1px solid #22d3ee',
+                padding: '16px 30px',
+                borderRadius: '18px',
+                fontWeight: 'bold',
+                fontSize: '16px',
+                cursor: 'pointer',
+              }}
+            >
+              Pelajari Sistem
+            </button>
           </div>
         </div>
-      </section>
 
-      {/* Features */}
-      <section className="px-6 py-20 bg-zinc-950">
-        <div className="max-w-6xl mx-auto text-center mb-14">
-          <h2 className="text-4xl font-bold mb-4">
-            Kenapa Pilih <span className="text-cyan-400">DAN</span>?
+        <div
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(34,211,238,0.2)',
+            borderRadius: '30px',
+            padding: '35px',
+            backdropFilter: 'blur(10px)',
+          }}
+        >
+          <h2
+            style={{
+              color: '#22d3ee',
+              marginBottom: '30px',
+              fontSize: '30px',
+            }}
+          >
+            Bonus Referral
           </h2>
 
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Sistem modern dengan fokus penggunaan pribadi dan bonus referral otomatis.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {[
-            {
-              title: 'Tanpa Deposit',
-              desc: 'Langsung bayar menggunakan QRIS, e-wallet, atau transfer bank.',
-            },
-            {
-              title: 'Referral 1 Level',
-              desc: 'Sistem sederhana, transparan, dan mudah dipahami semua orang.',
-            },
-            {
-              title: 'Bonus Otomatis',
-              desc: 'Dapatkan reward otomatis setiap referral melakukan transaksi.',
-            },
+            ['Paket Data', '20%'],
+            ['Pulsa & Top Up', '10%'],
+            ['PPOB', '5%'],
           ].map((item, index) => (
             <div
               key={index}
-              className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:border-cyan-500/40 transition-all"
+              style={{
+                background: 'rgba(0,0,0,0.4)',
+                padding: '20px',
+                borderRadius: '20px',
+                marginBottom: '15px',
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
             >
-              <h3 className="text-2xl font-semibold mb-4 text-cyan-400">
-                {item.title}
-              </h3>
+              <span>{item[0]}</span>
 
-              <p className="text-gray-300 leading-relaxed">
-                {item.desc}
-              </p>
+              <span
+                style={{
+                  color: '#22d3ee',
+                  fontWeight: 'bold',
+                }}
+              >
+                {item[1]}
+              </span>
             </div>
           ))}
         </div>
       </section>
-
-      {/* Activation Flow */}
-      <section className="px-6 py-20 bg-black">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <h2 className="text-4xl font-bold mb-4">
-              Cara Kerja Sistem
-            </h2>
-
-            <p className="text-gray-400">
-              Mudah digunakan untuk kebutuhan pribadi maupun referral.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              'Daftar Gratis',
-              'Beli Paket Aktivasi',
-              'Gunakan Layanan',
-              'Dapatkan Reward',
-            ].map((step, index) => (
-              <div
-                key={index}
-                className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-3xl p-8 text-center"
-              >
-                <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-cyan-500 text-black flex items-center justify-center text-xl font-bold">
-                  {index + 1}
-                </div>
-
-                <h3 className="text-xl font-semibold">
-                  {step}
-                </h3>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-zinc-950 px-6 py-10 text-center text-gray-400">
-        <p className="text-lg font-semibold text-white mb-2">
-          Digital Affiliate Network
-        </p>
-
-        <p>
-          Platform layanan digital modern dengan sistem referral sederhana.
-        </p>
-      </footer>
-    </div>
+    </main>
   )
 }
