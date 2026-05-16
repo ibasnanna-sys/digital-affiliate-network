@@ -44,7 +44,48 @@ export default function Home() {
         </div>
 
       </section>
+{/* Produk */}
+<section className="px-6 pb-20">
 
+  <h2 className="text-4xl font-bold mb-10">
+    Produk <span className="text-cyan-400">Digital</span>
+  </h2>
+
+  <div className="grid gap-5">
+
+    <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
+      <h3 className="text-2xl font-bold text-cyan-400">
+        Paket Data
+      </h3>
+
+      <p className="text-zinc-400 mt-2">
+        Bonus referral hingga 20%
+      </p>
+    </div>
+
+    <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
+      <h3 className="text-2xl font-bold text-cyan-400">
+        Pulsa & Top Up Game
+      </h3>
+
+      <p className="text-zinc-400 mt-2">
+        Bonus referral hingga 10%
+      </p>
+    </div>
+
+    <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
+      <h3 className="text-2xl font-bold text-cyan-400">
+        PPOB
+      </h3>
+
+      <p className="text-zinc-400 mt-2">
+        Bonus referral hingga 5%
+      </p>
+    </div>
+
+  </div>
+
+</section>
     </main>
   );
 }
