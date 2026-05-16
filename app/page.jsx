@@ -86,6 +86,62 @@ export default function Home() {
   </div>
 
 </section>
+
+      {/* Cara Kerja */}
+<section className="px-6 pb-20">
+
+  <h2 className="text-4xl font-bold mb-10">
+    Cara <span className="text-cyan-400">Kerja</span>
+  </h2>
+
+  <div className="grid gap-5">
+
+    <div className="bg-zinc-900 rounded-3xl p-6 border border-cyan-500/20">
+      <div className="text-cyan-400 text-3xl font-bold mb-4">
+        01
+      </div>
+
+      <h3 className="text-2xl font-bold mb-2">
+        Daftar Member
+      </h3>
+
+      <p className="text-zinc-400 leading-relaxed">
+        Member mendaftar menggunakan kode referral sponsor.
+      </p>
+    </div>
+
+    <div className="bg-zinc-900 rounded-3xl p-6 border border-cyan-500/20">
+      <div className="text-cyan-400 text-3xl font-bold mb-4">
+        02
+      </div>
+
+      <h3 className="text-2xl font-bold mb-2">
+        Belanja Produk
+      </h3>
+
+      <p className="text-zinc-400 leading-relaxed">
+        Member melakukan pembelian produk digital dan upload bukti pembayaran.
+      </p>
+    </div>
+
+    <div className="bg-zinc-900 rounded-3xl p-6 border border-cyan-500/20">
+      <div className="text-cyan-400 text-3xl font-bold mb-4">
+        03
+      </div>
+
+      <h3 className="text-2xl font-bold mb-2">
+        Bonus Referral Cair
+      </h3>
+
+      <p className="text-zinc-400 leading-relaxed">
+        Sponsor mendapatkan bonus otomatis dari transaksi referral.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+      
     </main>
   );
 }
