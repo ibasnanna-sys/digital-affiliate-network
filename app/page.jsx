@@ -269,6 +269,159 @@ export default function Home() {
         </div>
       </section>
 
+      <section
+  style={{
+    maxWidth: '1200px',
+    margin: '80px auto',
+    padding: '20px',
+  }}
+>
+  <div
+    style={{
+      background: 'rgba(255,255,255,0.05)',
+      border: '1px solid rgba(34,211,238,0.2)',
+      borderRadius: '30px',
+      padding: '40px',
+      backdropFilter: 'blur(10px)',
+    }}
+  >
+    <h2
+      style={{
+        color: '#22d3ee',
+        fontSize: '40px',
+        marginBottom: '30px',
+        textAlign: 'center',
+      }}
+    >
+      Member Area
+    </h2>
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))',
+        gap: '30px',
+      }}
+    >
+      {/* LOGIN */}
+      <div>
+        <h3
+          style={{
+            marginBottom: '20px',
+          }}
+        >
+          Login Member
+        </h3>
+
+        <input
+          placeholder="Nomor WhatsApp"
+          style={{
+            width: '100%',
+            padding: '15px',
+            marginBottom: '15px',
+            borderRadius: '15px',
+            border: 'none',
+            background: '#0f172a',
+            color: 'white',
+          }}
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          style={{
+            width: '100%',
+            padding: '15px',
+            marginBottom: '15px',
+            borderRadius: '15px',
+            border: 'none',
+            background: '#0f172a',
+            color: 'white',
+          }}
+        />
+
+        <button
+          style={{
+            width: '100%',
+            padding: '15px',
+            background: '#22d3ee',
+            color: 'black',
+            border: 'none',
+            borderRadius: '15px',
+            fontWeight: 'bold',
+          }}
+        >
+          Login
+        </button>
+      </div>
+
+      {/* REGISTER */}
+      <div>
+        <h3
+          style={{
+            marginBottom: '20px',
+          }}
+        >
+          Register Member
+        </h3>
+
+        <input
+          placeholder="Nama Lengkap"
+          style={{
+            width: '100%',
+            padding: '15px',
+            marginBottom: '15px',
+            borderRadius: '15px',
+            border: 'none',
+            background: '#0f172a',
+            color: 'white',
+          }}
+        />
+
+        <input
+          placeholder="Nomor WhatsApp"
+          style={{
+            width: '100%',
+            padding: '15px',
+            marginBottom: '15px',
+            borderRadius: '15px',
+            border: 'none',
+            background: '#0f172a',
+            color: 'white',
+          }}
+        />
+
+        <input
+          placeholder="Kode Referral"
+          style={{
+            width: '100%',
+            padding: '15px',
+            marginBottom: '15px',
+            borderRadius: '15px',
+            border: 'none',
+            background: '#0f172a',
+            color: 'white',
+          }}
+        />
+
+        <button
+          style={{
+            width: '100%',
+            padding: '15px',
+            background: '#22d3ee',
+            color: 'black',
+            border: 'none',
+            borderRadius: '15px',
+            fontWeight: 'bold',
+          }}
+        >
+          Register
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
       {/* FOOTER */}
       <footer
         style={{
