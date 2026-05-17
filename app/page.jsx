@@ -392,8 +392,6 @@ if (member) {
       Register Member
     </h2>
 
-    
-
     <div className="space-y-4">
 
       <input
