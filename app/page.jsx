@@ -392,12 +392,7 @@ if (member) {
       Register Member
     </h2>
 
-    <section className="px-6 pb-10">
-  <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-8">
     
-    <h2 className="text-3xl font-bold mb-6">
-      Login Member
-    </h2>
 
     <div className="space-y-4">
 
