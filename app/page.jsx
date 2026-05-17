@@ -282,7 +282,7 @@ const handleWithdraw = async () => {
     console.error(error);
   }
 };
-    }
+    
 
     // SIMPAN BONUS MEMBER
     await supabase.from("bonuses").insert([
