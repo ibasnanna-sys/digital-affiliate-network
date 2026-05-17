@@ -204,7 +204,7 @@ export default function Home() {
 
 </section>
 
-      {/* CTA */}
+{/* CTA */}
 <section className="px-6 pb-20">
 
   <div className="bg-cyan-400 text-black rounded-3xl p-8 text-center">
@@ -247,6 +247,7 @@ export default function Home() {
   </p>
 
 </footer>
+    
       
     </main>
   );
