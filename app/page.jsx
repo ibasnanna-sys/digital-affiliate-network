@@ -141,14 +141,16 @@ const handleWithdraw = async () => {
   }
 
   const { error } = await supabase
-    .from("withdraws")
-    .insert([
-      {
-        member_id: member.id,
-        name: member.name,
-        amount: withdrawAmount,
-        status: "pending",
-      },
+  .from("withdraws")
+  .insert([
+    {
+      member_id: member.id,
+      name: member.name,
+      whatsapp: member.whatsapp,
+      amount: withdrawAmount,
+      status: "pending",
+    },
+  
     ]);
 
   if (error) {
