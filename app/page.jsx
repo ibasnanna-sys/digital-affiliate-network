@@ -126,61 +126,102 @@ const [loginPassword, setLoginPassword] =
     window.location.reload();
   }
 };
+
+
+// =========================
+// HANDLE WITHDRAW
+// =========================
 const handleWithdraw = async () => {
 
+  // VALIDASI NOMINAL
   if (!withdrawAmount) {
     alert("Masukkan nominal");
     return;
   }
-  if (Number(withdrawAmount) < 25000) {
-  alert("Minimal withdraw Rp 25.000");
-  return;
-}
-  if (Number(withdrawAmount) > member.saldo) {
-  alert("Saldo tidak cukup");
-  return;
-}
 
+  // MINIMAL WITHDRAW
+  if (Number(withdrawAmount) < 25000) {
+    alert("Minimal withdraw Rp 25.000");
+    return;
+  }
+
+  // CEK SALDO MEMBER
+  if (Number(withdrawAmount) > member.saldo) {
+    alert("Saldo tidak cukup");
+    return;
+  }
+
+  // SIMPAN REQUEST WITHDRAW
   const { error } = await supabase
-  .from("withdraws")
-  .insert([
-    {
-      member_id: member.id,
-      name: member.name,
-      whatsapp: member.whatsapp,
-      amount: withdrawAmount,
-      status: "pending",
-    },
-  
+    .from("withdraws")
+    .insert([
+      {
+        member_id: member.id,
+        name: member.name,
+        whatsapp: member.whatsapp,
+        amount: withdrawAmount,
+        status: "pending",
+      },
     ]);
 
-  const handleTransaction = async (
+  // JIKA ERROR
+  if (error) {
+
+    alert("Withdraw gagal");
+    console.log(error);
+
+  } else {
+
+    // KURANGI SALDO MEMBER
+    await supabase
+      .from("members")
+      .update({
+        saldo:
+          (member.saldo || 0) -
+          Number(withdrawAmount),
+      })
+      .eq("id", member.id);
+
+    alert("Request withdraw dikirim");
+
+    window.location.reload();
+  }
+};
+
+// =========================
+// HANDLE TRANSACTION
+// =========================
+const handleTransaction = async (
   memberId,
   type,
   amount,
   profit,
   sponsorId = null
 ) => {
-  try {
-    // CEK MEMBER FROZEN 60 HARI
-    const { data: memberData, error: memberError } = await supabase
-      .from("members")
-      .select("id, status, frozen_until")
-      .eq("id", memberId)
-      .single();
 
+  try {
+
+    // CEK STATUS MEMBER
+    const { data: memberData, error: memberError } =
+      await supabase
+        .from("members")
+        .select("id, status, frozen_until")
+        .eq("id", memberId)
+        .single();
+
+    // JIKA ERROR
     if (memberError) {
       console.error(memberError);
       return false;
     }
 
-    // CEK STATUS MEMBER
+    // CEK MEMBER ACTIVE
     if (memberData.status !== "active") {
       alert("Member belum aktif");
       return false;
     }
 
-    // CEK FROZEN
+    // CEK MEMBER FROZEN
     if (
       memberData.frozen_until &&
       new Date(memberData.frozen_until) > new Date()
@@ -190,150 +231,77 @@ const handleWithdraw = async () => {
     }
 
     // SIMPAN TRANSAKSI
-    const { data: trxData, error: trxError } = await supabase
-      .from("transactions")
-      .insert([
-        {
-          member_id: memberId,
-          type: type,
-          amount: amount,
-          profit: profit,
-          status: "success",
-        },
-      ])
-      .select()
-      .single();
+    const { data: trxData, error: trxError } =
+      await supabase
+        .from("transactions")
+        .insert([
+          {
+            member_id: memberId,
+            type,
+            amount,
+            profit,
+            status: "success",
+          },
+        ])
+        .select()
+        .single();
 
+    // JIKA TRANSAKSI ERROR
     if (trxError) {
       console.error(trxError);
       return false;
     }
 
-    // BONUS MEMBER 20%
-    const memberBonus = Math.floor(profit * 0.2);
+    // HITUNG BONUS MEMBER
+    const memberBonus =
+      Math.floor(profit * 0.2);
 
-    // UPDATE SALDO MEMBER
-    const { data: balanceData } = await supabase
-      .from("balances")
-      .select("*")
-      .eq("member_id", memberId)
-      .single();
+    // CEK DATA BALANCE
+    const { data: balanceData } =
+      await supabase
+        .from("balances")
+        .select("*")
+        .eq("member_id", memberId)
+        .single();
 
+    // UPDATE BALANCE
     if (balanceData) {
+
       await supabase
         .from("balances")
         .update({
-          balance: balanceData.balance + memberBonus,
+          balance:
+            balanceData.balance + memberBonus,
           updated_at: new Date(),
         })
         .eq("member_id", memberId);
+
     } else {
-      await supabase.from("balances").insert([
-        {
-          member_id: memberId,
-          balance: memberBonus,
-        },
-      ]);
 
-      const checkFrozenMembers = async () => {
-  try {
-    const today = new Date();
-
-    // AMBIL SEMUA MEMBER ACTIVE
-    const { data: members, error } = await supabase
-      .from("members")
-      .select("*")
-      .eq("status", "active");
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    for (const member of members) {
-      // JIKA BELUM PERNAH TRANSAKSI
-      if (!member.last_transaction) {
-        continue;
-      }
-
-      const lastTransaction = new Date(member.last_transaction);
-
-      // SELISIH HARI
-      const diffTime = today - lastTransaction;
-      const diffDays = Math.floor(
-        diffTime / (1000 * 60 * 60 * 24)
-      );
-
-      // JIKA LEBIH DARI 60 HARI
-      if (diffDays >= 60) {
-        const frozenUntil = new Date();
-        frozenUntil.setDate(frozenUntil.getDate() + 30);
-
-        await supabase
-          .from("members")
-          .update({
-            status: "frozen",
-            frozen_until: frozenUntil,
-          })
-          .eq("id", member.id);
-      }
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-    
-
-    // SIMPAN BONUS MEMBER
-    await supabase.from("bonuses").insert([
-      {
-        member_id: memberId,
-        transaction_id: trxData.id,
-        bonus_type: "transaction",
-        amount: memberBonus,
-        description: "Bonus transaksi member",
-      },
-    ]);
-
-    // BONUS SPONSOR
-    if (sponsorId) {
-      const sponsorBonus = 1000;
-
-      const { data: sponsorBalance } = await supabase
+      // BUAT BALANCE BARU
+      await supabase
         .from("balances")
-        .select("*")
-        .eq("member_id", sponsorId)
-        .single();
-
-      if (sponsorBalance) {
-        await supabase
-          .from("balances")
-          .update({
-            balance: sponsorBalance.balance + sponsorBonus,
-            updated_at: new Date(),
-          })
-          .eq("member_id", sponsorId);
-      } else {
-        await supabase.from("balances").insert([
+        .insert([
           {
-            member_id: sponsorId,
-            balance: sponsorBonus,
+            member_id: memberId,
+            balance: memberBonus,
           },
         ]);
-      }
+    }
 
-      // SIMPAN BONUS SPONSOR
-      await supabase.from("bonuses").insert([
+    // SIMPAN BONUS TRANSAKSI
+    await supabase
+      .from("bonuses")
+      .insert([
         {
-          member_id: sponsorId,
-          from_member_id: memberId,
+          member_id: memberId,
           transaction_id: trxData.id,
-          bonus_type: "sponsor",
-          amount: sponsorBonus,
-          description: "Bonus sponsor referral",
+          bonus_type: "transaction",
+          amount: memberBonus,
+          description:
+            "Bonus transaksi member",
         },
       ]);
-    }
 
     // UPDATE LAST TRANSACTION
     await supabase
@@ -344,31 +312,81 @@ const handleWithdraw = async () => {
       .eq("id", memberId);
 
     return true;
+
   } catch (error) {
+
     console.error(error);
     return false;
   }
 };
 
-  if (error) {
-    alert("Withdraw gagal");
-    console.log(error);
-  } else {
+// =========================
+// CHECK FROZEN MEMBERS
+// =========================
+const checkFrozenMembers = async () => {
 
-  await supabase
-    .from("members")
-    .update({
-      saldo:
-        (member.saldo || 0) -
-        Number(withdrawAmount),
-    })
-    .eq("id", member.id);
+  try {
 
-  alert("Request withdraw dikirim");
+    const today = new Date();
 
-  window.location.reload();
-}
+    // AMBIL MEMBER ACTIVE
+    const { data: members, error } =
+      await supabase
+        .from("members")
+        .select("*")
+        .eq("status", "active");
+
+    // JIKA ERROR
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    // LOOP MEMBER
+    for (const member of members) {
+
+      // JIKA BELUM TRANSAKSI
+      if (!member.last_transaction) {
+        continue;
+      }
+
+      const lastTransaction =
+        new Date(member.last_transaction);
+
+      // HITUNG SELISIH HARI
+      const diffTime =
+        today - lastTransaction;
+
+      const diffDays = Math.floor(
+        diffTime / (1000 * 60 * 60 * 24)
+      );
+
+      // JIKA 60 HARI TIDAK TRANSAKSI
+      if (diffDays >= 60) {
+
+        const frozenUntil = new Date();
+
+        frozenUntil.setDate(
+          frozenUntil.getDate() + 30
+        );
+
+        // UPDATE STATUS FROZEN
+        await supabase
+          .from("members")
+          .update({
+            status: "frozen",
+            frozen_until: frozenUntil,
+          })
+          .eq("id", member.id);
+      }
+    }
+
+  } catch (error) {
+
+    console.error(error);
+  }
 };
+          
   
   useEffect(() => {
   const getReferral = async () => {
