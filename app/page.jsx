@@ -238,6 +238,31 @@ if (member) {
 
       </div>
 
+      <div className="mt-10 bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
+
+  <h2 className="text-2xl font-bold mb-5">
+    Withdraw Bonus
+  </h2>
+
+  <input
+    type="number"
+    placeholder="Nominal withdraw"
+    value={withdrawAmount}
+    onChange={(e) =>
+      setWithdrawAmount(e.target.value)
+    }
+    className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+  />
+
+  <button
+    onClick={handleWithdraw}
+    className="w-full mt-5 bg-green-500 text-white py-3 rounded-2xl font-bold"
+  >
+    Request Withdraw
+  </button>
+
+</div>
+
       <button
         onClick={() => {
           localStorage.removeItem("member");
