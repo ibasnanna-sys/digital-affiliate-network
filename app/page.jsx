@@ -386,7 +386,7 @@ if (member) {
       
       <section className="px-6 pb-20">
 
-  <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
+  <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-8">
 
     <h2 className="text-3xl font-bold mb-6">
       Register Member
