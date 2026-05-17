@@ -63,7 +63,7 @@ const [loginPassword, setLoginPassword] =
   alert("Register berhasil");
     
     if (sponsorCode) {
-  coif (sponsorCode) {
+  
 
   const { data: refMember } = await supabase
     .from("members")
@@ -83,7 +83,7 @@ const [loginPassword, setLoginPassword] =
 
   }
 }
-    }}
+    }
   
 };
   const handleLogin = async () => {
