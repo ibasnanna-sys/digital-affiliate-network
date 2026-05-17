@@ -469,15 +469,21 @@ const checkFrozenMembers = async () => {
     localStorage.getItem("member")
   );
 
-  const { data } = await supabase
+  if (!memberData) return;
+
+  const { data, error } = await supabase
     .from("withdraws")
     .select("*")
-    .eq("whatsapp", memberData.whatsapp)
+    .eq("member_id", memberData.id)
     .order("id", { ascending: false });
+
+  if (error) {
+    console.log(error);
+    return;
+  }
 
   setWithdrawHistory(data || []);
 };
-
   useEffect(() => {
   if (member) {
     getWithdrawHistory();
