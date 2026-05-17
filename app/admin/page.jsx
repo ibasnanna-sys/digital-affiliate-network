@@ -28,6 +28,7 @@ export default function AdminPage() {
       <h1 className="text-4xl font-bold text-cyan-400 mb-10">
         Admin Dashboard
       </h1>
+      
       <h2 className="text-zinc-400 mb-6">
   Total Member: {members.length}
 </h2>
