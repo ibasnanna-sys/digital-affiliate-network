@@ -42,7 +42,9 @@ export default function AdminPage() {
             key={member.id}
             className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
           >
-
+<p className="text-cyan-400 font-bold mb-3">
+  #{index + 1}
+</p>
             <h2 className="text-3xl font-bold">
               {member.name}
             </h2>
