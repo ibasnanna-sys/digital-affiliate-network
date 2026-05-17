@@ -1,3 +1,8 @@
+"use client";
+
+import { useState } from "react";
+import { supabase } from "../lib/supabase";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white">
