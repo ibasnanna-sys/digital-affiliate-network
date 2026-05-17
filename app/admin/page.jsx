@@ -159,28 +159,27 @@ setWithdraws(withdrawData || []);
 
       <button
         onClick={async () => {
+  await supabase
+    .from("withdraws")
+    .update({ status: "success" })
+    .eq("id", item.id);
 
-  const { data: memberData } = await supabase
-    .from("members")
-    .select("*")
-    .eq("whatsapp", item.whatsapp)
-    .single();
+  const memberData = members.find(
+    (m) => m.whatsapp === item.whatsapp
+  );
 
   if (memberData) {
+    const newSaldo =
+      Number(memberData.saldo || 0) -
+      Number(item.amount || 0);
+
     await supabase
       .from("members")
       .update({
-        saldo:
-          (memberData.saldo || 0) -
-          item.amount,
+        saldo: newSaldo,
       })
       .eq("id", memberData.id);
   }
-
-  await supabase
-    .from("withdraws")
-    .delete()
-    .eq("id", item.id);
 
   getMembers();
 }}
