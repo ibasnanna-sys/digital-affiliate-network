@@ -14,6 +14,9 @@ const [sponsorCode, setSponsorCode] = useState("");
 const [loginPassword, setLoginPassword] =
   useState("");
 
+  const [totalReferral, setTotalReferral] =
+  useState(0);
+
   useEffect(() => {
   const params = new URLSearchParams(window.location.search);
   const ref = params.get("ref");
@@ -70,6 +73,31 @@ const [loginPassword, setLoginPassword] =
     window.location.reload();
   }
 };
+  useEffect(() => {
+  const getReferral = async () => {
+
+    const memberData = JSON.parse(
+      localStorage.getItem("member")
+    );
+
+    if (!memberData?.referral_code) return;
+
+    const { data } = await supabase
+      .from("members")
+      .select("*")
+      .eq(
+        "sponsor_code",
+        memberData.referral_code
+      );
+
+    if (data) {
+      setTotalReferral(data.length);
+    }
+  };
+
+  getReferral();
+}, []);
+  
   const member =
   typeof window !== "undefined"
     ? JSON.parse(localStorage.getItem("member"))
@@ -131,8 +159,20 @@ if (member) {
   </button>
 
 </div>
-        </div>
-  
+      
+
+<div className="mt-6">
+  <p className="text-zinc-400">
+    Total Referral
+  </p>
+
+  <h3 className="text-3xl font-bold text-cyan-400">
+    {totalReferral}
+  </h3>
+</div>
+
+</div>
+
 
       </div>
 
