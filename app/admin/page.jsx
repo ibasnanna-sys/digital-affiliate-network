@@ -160,62 +160,70 @@ setWithdraws(withdrawData || []);
 
       <div className="flex gap-3 mt-5">
 
-        <button
-          onClick={async () => {
+  {/* APPROVE WITHDRAW */}
+  <button
+    onClick={async () => {
 
-            await supabase
-              .from("withdraws")
-              .update({
-                status: "success",
-              })
-              .eq("id", item.id);
+      await supabase
+        .from("withdraws")
+        .update({
+          status: "success",
+        })
+        .eq("id", item.id);
 
-            const memberData = members.find(
-              (m) => m.whatsapp === item.whatsapp
-            );
+      getMembers();
 
-            if (memberData) {
+    }}
+    className="bg-green-500 px-5 py-3 rounded-2xl font-bold"
+  >
+    Selesaikan
+  </button>
 
-              const newSaldo =
-                Number(memberData.saldo || 0) -
-                Number(item.amount || 0);
+  {/* REJECT WITHDRAW */}
+  <button
+    onClick={async () => {
 
-              await supabase
-                .from("members")
-                .update({
-                  saldo: newSaldo,
-                })
-                .eq("id", memberData.id);
+      // CARI MEMBER
+      const memberData = members.find(
+        (m) => m.whatsapp === item.whatsapp
+      );
 
-            }
+      // KEMBALIKAN SALDO
+      if (memberData) {
 
-            getMembers();
+        const newSaldo =
+          Number(memberData.saldo || 0) +
+          Number(item.amount || 0);
 
-          }}
-          className="bg-green-500 px-5 py-3 rounded-2xl font-bold"
-        >
-          Selesaikan
-        </button>
+        await supabase
+          .from("members")
+          .update({
+            saldo: newSaldo,
+          })
+          .eq("id", memberData.id);
+      }
 
-        <button
-          onClick={async () => {
+      // UPDATE STATUS
+      await supabase
+        .from("withdraws")
+        .update({
+          status: "rejected",
+        })
+        .eq("id", item.id);
 
-            await supabase
-              .from("withdraws")
-              .update({
-                status: "rejected",
-              })
-              .eq("id", item.id);
+      getMembers();
 
-            getMembers();
+    }}
+    className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
+  >
+    Tolak
+  </button>
 
-          }}
-          className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
-        >
-          Tolak
-        </button>
+</div>
 
-      </div>
+      
+
+    
 
     </div>
 
