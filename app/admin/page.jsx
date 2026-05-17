@@ -11,6 +11,12 @@ export default function AdminPage() {
 const [password, setPassword] = useState("");
 
   useEffect(() => {
+    const adminLogin =
+  localStorage.getItem("admin");
+
+if (adminLogin === "true") {
+  setIsAdmin(true);
+}
     getMembers();
   }, []);
 
