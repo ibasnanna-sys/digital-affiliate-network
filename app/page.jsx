@@ -146,10 +146,13 @@ const handleWithdraw = async () => {
   }
 
   // CEK SALDO MEMBER
-  if (Number(withdrawAmount) > member.saldo) {
-    alert("Saldo tidak cukup");
-    return;
-  }
+  if (
+  Number(withdrawAmount) >
+  Number(member?.saldo || 0)
+) {
+  alert("Saldo tidak cukup");
+  return;
+}
 
   // SIMPAN REQUEST WITHDRAW
   const { error } = await supabase
@@ -177,8 +180,8 @@ const handleWithdraw = async () => {
       .from("members")
       .update({
         saldo:
-          (member.saldo || 0) -
-          Number(withdrawAmount),
+  Number(member?.saldo || 0) -
+  Number(withdrawAmount),
       })
       .eq("id", member.id);
 
