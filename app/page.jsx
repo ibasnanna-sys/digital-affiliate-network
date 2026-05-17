@@ -204,16 +204,6 @@ if (member) {
 </div>
       
 
-<div className="mt-6">
-  <p className="text-zinc-400">
-    Total Referral
-  </p>
-
-  <h3 className="text-3xl font-bold text-cyan-400">
-    {totalReferral}
-  </h3>
-</div>
-
 </div>
 
 
