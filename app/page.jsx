@@ -15,6 +15,8 @@ const [loginPassword, setLoginPassword] =
   useState("");
   const [withdrawAmount, setWithdrawAmount] =
   useState("");
+  const [withdrawHistory, setWithdrawHistory] =
+  useState([]);
 
   const [totalReferral, setTotalReferral] =
   useState(0);
@@ -156,6 +158,27 @@ const handleWithdraw = async () => {
     ? JSON.parse(localStorage.getItem("member"))
     : null;
 
+  const getWithdrawHistory = async () => {
+
+  const memberData = JSON.parse(
+    localStorage.getItem("member")
+  );
+
+  const { data } = await supabase
+    .from("withdraws")
+    .select("*")
+    .eq("whatsapp", memberData.whatsapp)
+    .order("id", { ascending: false });
+
+  setWithdrawHistory(data || []);
+};
+
+  useEffect(() => {
+  if (member) {
+    getWithdrawHistory();
+  }
+}, []);
+
 if (member) {
   return (
     <main className="min-h-screen bg-black text-white p-6">
@@ -261,6 +284,35 @@ if (member) {
     Request Withdraw
   </button>
 
+</div>
+
+      <div className="mt-8">
+  <h2 className="text-2xl font-bold text-white mb-4">
+    Riwayat Withdraw
+  </h2>
+
+  {withdrawHistory.length === 0 ? (
+    <p className="text-gray-400">
+      Belum ada withdraw
+    </p>
+  ) : (
+    <div className="space-y-3">
+      {withdrawHistory.map((item) => (
+        <div
+          key={item.id}
+          className="bg-zinc-900 border border-cyan-500 rounded-xl p-4"
+        >
+          <p className="text-white font-bold">
+            Rp {item.amount}
+          </p>
+
+          <p className="text-gray-400 text-sm">
+            {item.status}
+          </p>
+        </div>
+      ))}
+    </div>
+  )}
 </div>
 
       <button
