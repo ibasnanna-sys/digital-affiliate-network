@@ -300,6 +300,9 @@ if (member) {
   <h2 className="text-2xl font-bold mb-5">
     Withdraw Bonus
   </h2>
+      <p className="text-yellow-400 mb-4">
+  Minimal withdraw Rp 25.000
+</p>  
 
   <input
     type="number"
