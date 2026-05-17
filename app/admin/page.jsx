@@ -15,7 +15,8 @@ export default function AdminPage() {
 
     const { data } = await supabase
       .from("members")
-      .select("*");
+.select("*")
+.order("saldo", { ascending: false });
 
     if (data) {
       setMembers(data);
