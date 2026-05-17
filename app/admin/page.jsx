@@ -52,19 +52,26 @@ setWithdraws(withdrawData || []);
         />
 
         <button
-          onClick={() => {
+  onClick={() => {
 
-            if (password === "admin123") {
-              setIsAdmin(true);
-            } else {
-              alert("Password salah");
-            }
+    if (password === "admin123") {
 
-          }}
-          className="w-full mt-5 bg-cyan-400 text-black py-3 rounded-2xl font-bold"
-        >
-          Login Admin
-        </button>
+      localStorage.setItem("admin", "true");
+
+      setIsAdmin(true);
+
+    } else {
+
+      alert("Password salah");
+
+    }
+
+  }}
+  className="w-full mt-5 bg-cyan-400 text-black py-3 rounded-2xl font-bold"
+>
+  Login Admin
+</button>
+    
 
       </div>
 
