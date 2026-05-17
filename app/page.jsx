@@ -102,32 +102,36 @@ if (member) {
             {member.referral_code}
           </h3>
 
-<div className="mt-6">
+<div className="flex gap-3 mt-4">
+
   <button
     onClick={() => {
-      navigator.clipboard.writeText(member.referral_code);
+      navigator.clipboard.writeText(
+        member.referral_code
+      );
+
       alert("Kode referral disalin");
     }}
     className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
   >
     Copy Referral
   </button>
-  
-  <button
-  onClick={() => {
-    navigator.clipboard.writeText(
-      `${window.location.origin}/?ref=${member.referral_code}`
-    );
 
-    alert("Link referral disalin");
-  }}
-  className="mt-4 ml-3 border border-cyan-400 text-cyan-400 px-5 py-3 rounded-2xl font-bold"
->
-  Copy Link
-</button>
-  
+  <button
+    onClick={() => {
+      navigator.clipboard.writeText(
+        `${window.location.origin}/?ref=${member.referral_code}`
+      );
+
+      alert("Link referral disalin");
+    }}
+    className="border border-cyan-400 text-cyan-400 px-5 py-3 rounded-2xl font-bold"
+  >
+    Copy Link
+  </button>
+
 </div>
-          
+        </div>
   
 
       </div>
