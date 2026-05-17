@@ -7,6 +7,8 @@ export default function AdminPage() {
 
   const [members, setMembers] = useState([]);
   const [withdraws, setWithdraws] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+const [password, setPassword] = useState("");
 
   useEffect(() => {
     getMembers();
@@ -30,6 +32,45 @@ setWithdraws(withdrawData || []);
       
     }
   };
+
+  if (!isAdmin) {
+  return (
+    <main className="min-h-screen bg-black text-white flex items-center justify-center p-6">
+
+      <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-8 w-full max-w-md">
+
+        <h1 className="text-4xl font-bold text-cyan-400 mb-6">
+          Admin Login
+        </h1>
+
+        <input
+          type="password"
+          placeholder="Password Admin"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+        />
+
+        <button
+          onClick={() => {
+
+            if (password === "admin123") {
+              setIsAdmin(true);
+            } else {
+              alert("Password salah");
+            }
+
+          }}
+          className="w-full mt-5 bg-cyan-400 text-black py-3 rounded-2xl font-bold"
+        >
+          Login Admin
+        </button>
+
+      </div>
+
+    </main>
+  );
+}
 
   return (
     <main className="min-h-screen bg-black text-white p-6">
