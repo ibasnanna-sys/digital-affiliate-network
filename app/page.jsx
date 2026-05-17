@@ -38,6 +38,78 @@ const [loginPassword, setLoginPassword] =
     alert("Register berhasil");
   }
 };
+  const handleLogin = async () => {
+
+  const { data, error } = await supabase
+    .from("members")
+    .select("*")
+    .eq("whatsapp", loginWhatsapp)
+    .eq("password", loginPassword)
+    .single();
+
+  if (error || !data) {
+    alert("Login gagal");
+  } else {
+
+    localStorage.setItem(
+      "member",
+      JSON.stringify(data)
+    );
+
+    alert("Login berhasil");
+
+    window.location.reload();
+  }
+};
+  const member =
+  typeof window !== "undefined"
+    ? JSON.parse(localStorage.getItem("member"))
+    : null;
+
+if (member) {
+  return (
+    <main className="min-h-screen bg-black text-white p-6">
+
+      <h1 className="text-4xl font-bold text-cyan-400">
+        Dashboard Member
+      </h1>
+
+      <div className="mt-10 bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
+
+        <p className="text-zinc-400">
+          Nama Member
+        </p>
+
+        <h2 className="text-3xl font-bold">
+          {member.name}
+        </h2>
+
+        <div className="mt-6">
+          <p className="text-zinc-400">
+            Kode Referral
+          </p>
+
+          <h3 className="text-2xl text-cyan-400 font-bold">
+            {member.referral_code}
+          </h3>
+        </div>
+
+      </div>
+
+      <button
+        onClick={() => {
+          localStorage.removeItem("member");
+          window.location.reload();
+        }}
+        className="mt-6 bg-red-500 px-6 py-3 rounded-2xl font-bold"
+      >
+        Logout
+      </button>
+
+    </main>
+  );
+}
+  
   return (
     <main className="min-h-screen bg-black text-white">
 
@@ -269,6 +341,49 @@ const [loginPassword, setLoginPassword] =
   </div>
 
 </section>
+      <section className="px-6 pb-10">
+
+  <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
+
+    <h2 className="text-3xl font-bold mb-6">
+      Login Member
+    </h2>
+
+    <div className="space-y-4">
+
+      <input
+        type="text"
+        placeholder="WhatsApp"
+        value={loginWhatsapp}
+        onChange={(e) =>
+          setLoginWhatsapp(e.target.value)
+        }
+        className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <input
+        type="password"
+        placeholder="Password"
+        value={loginPassword}
+        onChange={(e) =>
+          setLoginPassword(e.target.value)
+        }
+        className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <button
+        onClick={handleLogin}
+        className="w-full bg-cyan-400 text-black py-3 rounded-2xl font-bold"
+      >
+        Login
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+      
       <section className="px-6 pb-20">
 
   <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
