@@ -28,12 +28,6 @@ const { data: withdrawData } = await supabase
 
 setWithdraws(withdrawData || []);
       
-      const { data: withdrawData } = await supabase
-  .from("withdraws")
-  .select("*")
-  .order("id", { ascending: false });
-
-setWithdraws(withdrawData || []);
     }
   };
 
