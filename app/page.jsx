@@ -234,6 +234,54 @@ const handleWithdraw = async () => {
           balance: memberBonus,
         },
       ]);
+
+      const checkFrozenMembers = async () => {
+  try {
+    const today = new Date();
+
+    // AMBIL SEMUA MEMBER ACTIVE
+    const { data: members, error } = await supabase
+      .from("members")
+      .select("*")
+      .eq("status", "active");
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    for (const member of members) {
+      // JIKA BELUM PERNAH TRANSAKSI
+      if (!member.last_transaction) {
+        continue;
+      }
+
+      const lastTransaction = new Date(member.last_transaction);
+
+      // SELISIH HARI
+      const diffTime = today - lastTransaction;
+      const diffDays = Math.floor(
+        diffTime / (1000 * 60 * 60 * 24)
+      );
+
+      // JIKA LEBIH DARI 60 HARI
+      if (diffDays >= 60) {
+        const frozenUntil = new Date();
+        frozenUntil.setDate(frozenUntil.getDate() + 30);
+
+        await supabase
+          .from("members")
+          .update({
+            status: "frozen",
+            frozen_until: frozenUntil,
+          })
+          .eq("id", member.id);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
     }
 
     // SIMPAN BONUS MEMBER
@@ -361,6 +409,7 @@ const handleWithdraw = async () => {
 }, []);
   
   useEffect(() => {
+    checkFrozenMembers();
 
   const getMember = async () => {
 
