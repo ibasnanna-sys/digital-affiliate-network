@@ -36,8 +36,8 @@ export default function AdminPage() {
 
       <div className="grid gap-5">
 
-        {members.map((member) => (
-
+        {members.map((member, index) => (
+      
           <div
             key={member.id}
             className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
