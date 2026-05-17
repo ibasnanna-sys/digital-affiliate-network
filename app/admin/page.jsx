@@ -85,6 +85,60 @@ setWithdraws(withdrawData || []);
     Withdraw Request
   </h2>
         
+        <div className="space-y-4 mt-6">
+  {withdraws.map((item) => (
+    <div
+      key={item.id}
+      className="bg-zinc-900 border border-cyan-500 rounded-2xl p-5"
+    >
+      <h2 className="text-white text-xl font-bold">
+        {item.name}
+      </h2>
+
+      <p className="text-gray-400">
+        {item.whatsapp}
+      </p>
+
+      <p className="text-cyan-400 mt-2">
+        Rp {item.amount}
+      </p>
+
+      <p className="text-yellow-400 mt-2">
+        Status: {item.status}
+      </p>
+
+      <div className="flex gap-3 mt-4">
+        <button
+          onClick={async () => {
+            await supabase
+              .from("withdraws")
+              .update({ status: "success" })
+              .eq("id", item.id);
+
+            getMembers();
+          }}
+          className="bg-green-500 text-white px-4 py-2 rounded-xl"
+        >
+          Selesaikan
+        </button>
+
+        <button
+          onClick={async () => {
+            await supabase
+              .from("withdraws")
+              .update({ status: "rejected" })
+              .eq("id", item.id);
+
+            getMembers();
+          }}
+          className="bg-red-500 text-white px-4 py-2 rounded-xl"
+        >
+          Tolak
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
 <div className="mt-8 space-y-5">
   {withdraws.map((item) => (
     <div
