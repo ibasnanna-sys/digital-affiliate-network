@@ -485,10 +485,12 @@ const checkFrozenMembers = async () => {
   setWithdrawHistory(data || []);
 };
   useEffect(() => {
+
   if (member) {
     getWithdrawHistory();
   }
-}, []);
+
+}, [member]);
 
 if (member) {
   return (
