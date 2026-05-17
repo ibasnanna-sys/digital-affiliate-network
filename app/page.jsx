@@ -8,6 +8,11 @@ const [name, setName] = useState("");
 const [whatsapp, setWhatsapp] = useState("");
 const [password, setPassword] = useState("");
 const [sponsorCode, setSponsorCode] = useState("");
+  const [loginWhatsapp, setLoginWhatsapp] =
+  useState("");
+
+const [loginPassword, setLoginPassword] =
+  useState("");
 
   const handleRegister = async () => {
 
