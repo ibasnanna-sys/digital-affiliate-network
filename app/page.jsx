@@ -154,9 +154,20 @@ const handleWithdraw = async () => {
     alert("Withdraw gagal");
     console.log(error);
   } else {
-    alert("Request withdraw dikirim");
-    setWithdrawAmount("");
-  }
+
+  await supabase
+    .from("members")
+    .update({
+      saldo:
+        (member.saldo || 0) -
+        Number(withdrawAmount),
+    })
+    .eq("id", member.id);
+
+  alert("Request withdraw dikirim");
+
+  window.location.reload();
+}
 };
   
   useEffect(() => {
