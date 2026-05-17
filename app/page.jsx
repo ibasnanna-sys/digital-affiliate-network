@@ -4,6 +4,35 @@ import { useState } from "react";
 import { supabase } from "../lib/supabase";
 
 export default function Home() {
+const [name, setName] = useState("");
+const [whatsapp, setWhatsapp] = useState("");
+const [password, setPassword] = useState("");
+const [sponsorCode, setSponsorCode] = useState("");
+
+  const handleRegister = async () => {
+
+  const referralCode =
+    "DAN" + Math.floor(Math.random() * 999999);
+
+  const { data, error } = await supabase
+    .from("members")
+    .insert([
+      {
+        name,
+        whatsapp,
+        password,
+        sponsor_code: sponsorCode,
+        referral_code: referralCode,
+      },
+    ]);
+
+  if (error) {
+    alert("Register gagal");
+    console.log(error);
+  } else {
+    alert("Register berhasil");
+  }
+};
   return (
     <main className="min-h-screen bg-black text-white">
 
@@ -231,6 +260,60 @@ export default function Home() {
     <button className="mt-8 bg-black text-white px-8 py-4 rounded-2xl font-bold">
       Register Member
     </button>
+
+  </div>
+
+</section>
+      <section className="px-6 pb-20">
+
+  <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
+
+    <h2 className="text-3xl font-bold mb-6">
+      Register Member
+    </h2>
+
+    <div className="space-y-4">
+
+      <input
+        type="text"
+        placeholder="Nama"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <input
+        type="text"
+        placeholder="WhatsApp"
+        value={whatsapp}
+        onChange={(e) => setWhatsapp(e.target.value)}
+        className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <input
+        type="text"
+        placeholder="Kode Referral"
+        value={sponsorCode}
+        onChange={(e) => setSponsorCode(e.target.value)}
+        className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <button
+        onClick={handleRegister}
+        className="w-full bg-cyan-400 text-black py-3 rounded-2xl font-bold"
+      >
+        Register
+      </button>
+
+    </div>
 
   </div>
 
