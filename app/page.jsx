@@ -154,6 +154,154 @@ const handleWithdraw = async () => {
   
     ]);
 
+  const handleTransaction = async (
+  memberId,
+  type,
+  amount,
+  profit,
+  sponsorId = null
+) => {
+  try {
+    // CEK MEMBER FROZEN 60 HARI
+    const { data: memberData, error: memberError } = await supabase
+      .from("members")
+      .select("id, status, frozen_until")
+      .eq("id", memberId)
+      .single();
+
+    if (memberError) {
+      console.error(memberError);
+      return false;
+    }
+
+    // CEK STATUS MEMBER
+    if (memberData.status !== "active") {
+      alert("Member belum aktif");
+      return false;
+    }
+
+    // CEK FROZEN
+    if (
+      memberData.frozen_until &&
+      new Date(memberData.frozen_until) > new Date()
+    ) {
+      alert("Akun sedang frozen");
+      return false;
+    }
+
+    // SIMPAN TRANSAKSI
+    const { data: trxData, error: trxError } = await supabase
+      .from("transactions")
+      .insert([
+        {
+          member_id: memberId,
+          type: type,
+          amount: amount,
+          profit: profit,
+          status: "success",
+        },
+      ])
+      .select()
+      .single();
+
+    if (trxError) {
+      console.error(trxError);
+      return false;
+    }
+
+    // BONUS MEMBER 20%
+    const memberBonus = Math.floor(profit * 0.2);
+
+    // UPDATE SALDO MEMBER
+    const { data: balanceData } = await supabase
+      .from("balances")
+      .select("*")
+      .eq("member_id", memberId)
+      .single();
+
+    if (balanceData) {
+      await supabase
+        .from("balances")
+        .update({
+          balance: balanceData.balance + memberBonus,
+          updated_at: new Date(),
+        })
+        .eq("member_id", memberId);
+    } else {
+      await supabase.from("balances").insert([
+        {
+          member_id: memberId,
+          balance: memberBonus,
+        },
+      ]);
+    }
+
+    // SIMPAN BONUS MEMBER
+    await supabase.from("bonuses").insert([
+      {
+        member_id: memberId,
+        transaction_id: trxData.id,
+        bonus_type: "transaction",
+        amount: memberBonus,
+        description: "Bonus transaksi member",
+      },
+    ]);
+
+    // BONUS SPONSOR
+    if (sponsorId) {
+      const sponsorBonus = 1000;
+
+      const { data: sponsorBalance } = await supabase
+        .from("balances")
+        .select("*")
+        .eq("member_id", sponsorId)
+        .single();
+
+      if (sponsorBalance) {
+        await supabase
+          .from("balances")
+          .update({
+            balance: sponsorBalance.balance + sponsorBonus,
+            updated_at: new Date(),
+          })
+          .eq("member_id", sponsorId);
+      } else {
+        await supabase.from("balances").insert([
+          {
+            member_id: sponsorId,
+            balance: sponsorBonus,
+          },
+        ]);
+      }
+
+      // SIMPAN BONUS SPONSOR
+      await supabase.from("bonuses").insert([
+        {
+          member_id: sponsorId,
+          from_member_id: memberId,
+          transaction_id: trxData.id,
+          bonus_type: "sponsor",
+          amount: sponsorBonus,
+          description: "Bonus sponsor referral",
+        },
+      ]);
+    }
+
+    // UPDATE LAST TRANSACTION
+    await supabase
+      .from("members")
+      .update({
+        last_transaction: new Date(),
+      })
+      .eq("id", memberId);
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
   if (error) {
     alert("Withdraw gagal");
     console.log(error);
