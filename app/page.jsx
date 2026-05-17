@@ -32,14 +32,7 @@ const [loginPassword, setLoginPassword] =
   const [totalReferral, setTotalReferral] =
   useState(0);
 
-  useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const ref = params.get("ref");
-
-  if (ref) {
-    setSponsorCode(ref);
-  }
-}, []);
+  
   
   const handleRegister = async () => {
 
@@ -191,10 +184,7 @@ const handleWithdraw = async () => {
   getReferral();
 }, []);
   
-  const member =
-  typeof window !== "undefined"
-    ? JSON.parse(localStorage.getItem("member"))
-    : null;
+  const [member, setMember] = useState(null);
 
   const getWithdrawHistory = async () => {
 
