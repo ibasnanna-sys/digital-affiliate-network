@@ -32,10 +32,12 @@ export default function AdminPage() {
       <div className="grid gap-5">
 
         {members.map((member) => (
+
           <div
             key={member.id}
             className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
           >
+
             <h2 className="text-2xl font-bold">
               {member.name}
             </h2>
@@ -45,9 +47,13 @@ export default function AdminPage() {
             </p>
 
             <p className="text-cyan-400 mt-3">
-              Referral: {member.referral_code}
+              Referral:
+              {" "}
+              {member.referral_code}
             </p>
+
           </div>
+
         ))}
 
       </div>
