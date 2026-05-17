@@ -384,7 +384,7 @@ if (member) {
 
 </section>
       
-      <section className="px-6 pb-20">
+      <section className="px-6 pb-10">
 
   <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-8">
 
