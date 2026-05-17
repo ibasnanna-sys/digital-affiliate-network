@@ -435,7 +435,7 @@ if (member) {
         Register
       </button>
 
-    </div>
+    
 
   </div>
 
