@@ -44,10 +44,34 @@ const [loginPassword, setLoginPassword] =
     ]);
 
   if (error) {
-    alert("Register gagal");
-    console.log(error);
-  } else {
-    alert("Register berhasil");
+
+  alert("Register gagal");
+  console.log(error);
+
+} else {
+
+  if (sponsorCode) {
+
+    const { data: sponsor } = await supabase
+      .from("members")
+      .select("*")
+      .eq("referral_code", sponsorCode)
+      .single();
+
+    if (sponsor) {
+
+      await supabase
+        .from("members")
+        .update({
+          saldo: (sponsor.saldo || 0) + 10000,
+        })
+        .eq("id", sponsor.id);
+
+    }
+
+  }
+
+  alert("Register berhasil");
   }
 };
   const handleLogin = async () => {
@@ -129,6 +153,16 @@ if (member) {
           <h3 className="text-2xl text-cyan-400 font-bold">
             {member.referral_code}
           </h3>
+          
+          <div className="mt-6">
+  <p className="text-zinc-400">
+    Saldo Bonus
+  </p>
+
+  <h3 className="text-3xl font-bold text-green-400">
+    Rp {member.saldo || 0}
+  </h3>
+</div>
           <div className="mt-6">
   <p className="text-zinc-400">
     Total Referral
