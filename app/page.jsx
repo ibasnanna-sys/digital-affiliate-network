@@ -58,26 +58,7 @@ const [loginPassword, setLoginPassword] =
 
 } else {
 
-  if (sponsorCode) {
-
-    const { data: sponsor } = await supabase
-      .from("members")
-      .select("*")
-      .eq("referral_code", sponsorCode)
-      .single();
-
-    if (sponsor) {
-
-      await supabase
-        .from("members")
-        .update({
-          saldo: (sponsor.saldo || 0) + 10000,
-        })
-        .eq("id", sponsor.id);
-
-    }
-
-  }
+  
 
   alert("Register berhasil");
     
