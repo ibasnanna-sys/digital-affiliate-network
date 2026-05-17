@@ -13,6 +13,8 @@ const [sponsorCode, setSponsorCode] = useState("");
 
 const [loginPassword, setLoginPassword] =
   useState("");
+  const [withdrawAmount, setWithdrawAmount] =
+  useState("");
 
   const [totalReferral, setTotalReferral] =
   useState(0);
@@ -97,6 +99,33 @@ const [loginPassword, setLoginPassword] =
     window.location.reload();
   }
 };
+const handleWithdraw = async () => {
+
+  if (!withdrawAmount) {
+    alert("Masukkan nominal");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("withdraws")
+    .insert([
+      {
+        member_id: member.id,
+        name: member.name,
+        amount: withdrawAmount,
+        status: "pending",
+      },
+    ]);
+
+  if (error) {
+    alert("Withdraw gagal");
+    console.log(error);
+  } else {
+    alert("Request withdraw dikirim");
+    setWithdrawAmount("");
+  }
+};
+  
   useEffect(() => {
   const getReferral = async () => {
 
