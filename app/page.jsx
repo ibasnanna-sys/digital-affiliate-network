@@ -306,9 +306,18 @@ if (member) {
             Rp {item.amount}
           </p>
 
-          <p className="text-gray-400 text-sm">
-            {item.status}
-          </p>
+<p
+  className={`text-sm font-bold ${
+    item.status === "success"
+      ? "text-green-400"
+      : item.status === "rejected"
+      ? "text-red-400"
+      : "text-yellow-400"
+  }`}
+>
+  {item.status}
+</p>
+          
         </div>
       ))}
     </div>
