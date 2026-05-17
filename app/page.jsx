@@ -8,6 +8,17 @@ const [name, setName] = useState("");
 const [whatsapp, setWhatsapp] = useState("");
 const [password, setPassword] = useState("");
 const [sponsorCode, setSponsorCode] = useState("");
+  useEffect(() => {
+  const params = new URLSearchParams(
+    window.location.search
+  );
+
+  const ref = params.get("ref");
+
+  if (ref) {
+    setSponsorCode(ref);
+  }
+}, []);
   const [loginWhatsapp, setLoginWhatsapp] =
   useState("");
 
@@ -76,6 +87,27 @@ const [loginPassword, setLoginPassword] =
   }
 
   alert("Register berhasil");
+    
+    if (sponsorCode) {
+  const { data: refMember } = await supabase
+    .from("members")
+    .select("*")
+    .eq("referral_code", sponsorCode)
+    .single();
+
+  if (refMember) {
+    await supabase
+      .from("members")
+      .update({
+        total_referral:
+          (refMember.total_referral || 0) + 1,
+
+        saldo:
+          (refMember.saldo || 0) + 1000,
+      })
+      .eq("id", refMember.id);
+  }
+}
   }
 };
   const handleLogin = async () => {
