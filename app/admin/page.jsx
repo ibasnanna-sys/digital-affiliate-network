@@ -105,13 +105,31 @@ setWithdraws(withdrawData || []);
 
       <button
         onClick={async () => {
-          await supabase
-            .from("withdraws")
-            .delete()
-            .eq("id", item.id);
 
-          getMembers();
-        }}
+  const { data: memberData } = await supabase
+    .from("members")
+    .select("*")
+    .eq("whatsapp", item.whatsapp)
+    .single();
+
+  if (memberData) {
+    await supabase
+      .from("members")
+      .update({
+        saldo:
+          (memberData.saldo || 0) -
+          item.amount,
+      })
+      .eq("id", memberData.id);
+  }
+
+  await supabase
+    .from("withdraws")
+    .delete()
+    .eq("id", item.id);
+
+  getMembers();
+}}
         className="mt-5 bg-red-500 px-5 py-3 rounded-2xl font-bold"
       >
         Selesaikan
