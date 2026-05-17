@@ -185,6 +185,38 @@ const handleWithdraw = async () => {
 }, []);
   
   const [member, setMember] = useState(null);
+  useEffect(() => {
+
+  const getMember = async () => {
+
+    const localMember = JSON.parse(
+      localStorage.getItem("member")
+    );
+
+    if (!localMember) return;
+
+    const { data } = await supabase
+      .from("members")
+      .select("*")
+      .eq("id", localMember.id)
+      .single();
+
+    if (data) {
+
+      setMember(data);
+
+      localStorage.setItem(
+        "member",
+        JSON.stringify(data)
+      );
+
+    }
+
+  };
+
+  getMember();
+
+}, []);
 
   const getWithdrawHistory = async () => {
 
