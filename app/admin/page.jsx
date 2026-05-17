@@ -169,17 +169,6 @@ setWithdraws(withdrawData || []);
 
 </div>
 
-      
-  
-
-
-      </div>
-
-    ))}
-
-  </div>
-
-</div>
 
     </main>
   );
