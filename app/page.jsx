@@ -187,6 +187,18 @@ const handleWithdraw = async () => {
   const [member, setMember] = useState(null);
   useEffect(() => {
 
+  const localMember = JSON.parse(
+    localStorage.getItem("member")
+  );
+
+  if (localMember) {
+    setMember(localMember);
+  }
+
+}, []);
+  
+  useEffect(() => {
+
   const getMember = async () => {
 
     const localMember = JSON.parse(
