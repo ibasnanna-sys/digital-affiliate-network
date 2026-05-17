@@ -136,6 +136,10 @@ const handleWithdraw = async () => {
   alert("Minimal withdraw Rp 25.000");
   return;
 }
+  if (Number(withdrawAmount) > member.saldo) {
+  alert("Saldo tidak cukup");
+  return;
+}
 
   const { error } = await supabase
   .from("withdraws")
