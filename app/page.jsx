@@ -63,6 +63,8 @@ const [loginPassword, setLoginPassword] =
   alert("Register berhasil");
     
     if (sponsorCode) {
+  coif (sponsorCode) {
+
   const { data: refMember } = await supabase
     .from("members")
     .select("*")
@@ -70,16 +72,15 @@ const [loginPassword, setLoginPassword] =
     .single();
 
   if (refMember) {
+
     await supabase
       .from("members")
       .update({
         total_referral:
           (refMember.total_referral || 0) + 1,
-
-        saldo:
-          (refMember.saldo || 0) + 1000,
       })
       .eq("id", refMember.id);
+
   }
 }
   }
