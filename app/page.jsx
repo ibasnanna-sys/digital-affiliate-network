@@ -112,6 +112,20 @@ if (member) {
   >
     Copy Referral
   </button>
+  
+  <button
+  onClick={() => {
+    navigator.clipboard.writeText(
+      `${window.location.origin}/?ref=${member.referral_code}`
+    );
+
+    alert("Link referral disalin");
+  }}
+  className="mt-4 ml-3 border border-cyan-400 text-cyan-400 px-5 py-3 rounded-2xl font-bold"
+>
+  Copy Link
+</button>
+  
 </div>
           
         </div>
