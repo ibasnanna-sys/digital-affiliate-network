@@ -27,8 +27,22 @@ export default function AdminPage() {
   const [productName, setProductName] =
     useState("");
 
+  const [category, setCategory] =
+    useState("");
+
+  const [modalPrice, setModalPrice] =
+    useState("");
+
   const [sellPrice, setSellPrice] =
     useState("");
+
+  const [profit, setProfit] =
+    useState("");
+
+  const [
+    bonusReferral,
+    setBonusReferral,
+  ] = useState("");
 
   // =========================
   // CHECK LOGIN
@@ -148,7 +162,7 @@ export default function AdminPage() {
   }
 
   // =========================
-  // DASHBOARD ADMIN
+  // DASHBOARD
   // =========================
   return (
 
@@ -220,7 +234,9 @@ export default function AdminPage() {
                 className={`font-bold ${
                   member.status === "active"
                     ? "text-green-400"
-                    : "text-yellow-400"
+                    : member.status === "pending"
+                    ? "text-yellow-400"
+                    : "text-zinc-400"
                 }`}
               >
 
@@ -229,9 +245,88 @@ export default function AdminPage() {
 
                 {member.status === "active"
                   ? "AKTIF"
-                  : "PENDING"}
+                  : member.status === "pending"
+                  ? "PENDING"
+                  : "FROZEN"}
 
               </p>
+
+              {/* AKTIVASI MEMBER */}
+              {member.status !== "active" && (
+
+                <button
+                  onClick={async () => {
+
+                    await supabase
+                      .from("members")
+                      .update({
+                        status: "active",
+                      })
+                      .eq(
+                        "id",
+                        member.id
+                      );
+
+                    // BONUS SPONSOR
+                    if (
+                      member.sponsor_code
+                    ) {
+
+                      const {
+                        data: sponsor,
+                      } =
+                        await supabase
+                          .from(
+                            "members"
+                          )
+                          .select("*")
+                          .eq(
+                            "referral_code",
+                            member.sponsor_code
+                          )
+                          .single();
+
+                      if (sponsor) {
+
+                        await supabase
+                          .from(
+                            "members"
+                          )
+                          .update({
+                            saldo:
+                              Number(
+                                sponsor.saldo ||
+                                  0
+                              ) + 1000,
+
+                            total_referral:
+                              Number(
+                                sponsor.total_referral ||
+                                  0
+                              ) + 1,
+                          })
+                          .eq(
+                            "id",
+                            sponsor.id
+                          );
+
+                      }
+
+                    }
+
+                    alert(
+                      "Member berhasil diaktivasi"
+                    );
+
+                    getData();
+
+                  }}
+                  className="mt-5 bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
+                >
+                  Aktivasi Member
+                </button>
+
+              )}
 
             </div>
 
@@ -286,7 +381,6 @@ export default function AdminPage() {
 
               <div className="flex gap-3 mt-5">
 
-                {/* APPROVE */}
                 <button
                   onClick={async () => {
 
@@ -309,7 +403,6 @@ export default function AdminPage() {
                   Selesaikan
                 </button>
 
-                {/* REJECT */}
                 <button
                   onClick={async () => {
 
@@ -373,8 +466,32 @@ export default function AdminPage() {
             />
 
             <input
+              type="text"
+              placeholder="Kategori"
+              value={category}
+              onChange={(e) =>
+                setCategory(
+                  e.target.value
+                )
+              }
+              className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+            />
+
+            <input
               type="number"
-              placeholder="Harga Produk"
+              placeholder="Harga Modal"
+              value={modalPrice}
+              onChange={(e) =>
+                setModalPrice(
+                  e.target.value
+                )
+              }
+              className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              type="number"
+              placeholder="Harga Jual"
               value={sellPrice}
               onChange={(e) =>
                 setSellPrice(
@@ -384,47 +501,78 @@ export default function AdminPage() {
               className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
             />
 
-            {/* TAMBAH PRODUK */}
+            <input
+              type="number"
+              placeholder="Profit"
+              value={profit}
+              onChange={(e) =>
+                setProfit(
+                  e.target.value
+                )
+              }
+              className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+            />
+
+            <input
+              type="number"
+              placeholder="Bonus Referral (%)"
+              value={bonusReferral}
+              onChange={(e) =>
+                setBonusReferral(
+                  e.target.value
+                )
+              }
+              className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+            />
+
             <button
               onClick={async () => {
 
-                const { error } =
-                  await supabase
-                    .from("products")
-                    .insert([
-                      {
-                        name:
-                          productName,
+                await supabase
+                  .from("products")
+                  .insert([
+                    {
+                      name:
+                        productName,
 
-                        price:
-                          Number(
-                            sellPrice || 0
-                          ),
+                      category,
 
-                        is_active: true,
+                      modal_price:
+                        Number(
+                          modalPrice
+                        ),
 
-                        is_activation_product: false,
-                      },
-                    ]);
+                      sell_price:
+                        Number(
+                          sellPrice
+                        ),
 
-                if (error) {
+                      profit:
+                        Number(
+                          profit
+                        ),
 
-                  console.log(error);
+                      bonus_referral:
+                        Number(
+                          bonusReferral
+                        ),
 
-                  alert(
-                    "Gagal tambah produk"
-                  );
+                      is_active: true,
 
-                  return;
-
-                }
+                      is_activation_product: false,
+                    },
+                  ]);
 
                 alert(
                   "Produk berhasil ditambah"
                 );
 
                 setProductName("");
+                setCategory("");
+                setModalPrice("");
                 setSellPrice("");
+                setProfit("");
+                setBonusReferral("");
 
                 getData();
 
@@ -438,172 +586,7 @@ export default function AdminPage() {
 
         </div>
 
-        {/* LIST PRODUK */}
-        <div className="grid gap-5 mt-8">
-
-          {products.map((product) => (
-
-            <div
-              key={product.id}
-              className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
-            >
-
-              <h3 className="text-2xl font-bold">
-                {product.name}
-              </h3>
-
-              <div className="mt-5 space-y-2">
-
-                <p className="text-cyan-400">
-
-                  Harga:
-                  {" "}
-                  Rp{" "}
-                  {Number(
-                    product.price || 0
-                  ).toLocaleString()}
-
-                </p>
-
-                <p
-                  className={`font-bold ${
-                    product.is_active
-                      ? "text-green-400"
-                      : "text-red-400"
-                  }`}
-                >
-
-                  {product.is_active
-                    ? "AKTIF"
-                    : "NONAKTIF"}
-
-                </p>
-
-                {product.is_activation_product && (
-
-                  <div className="bg-cyan-400 text-black px-4 py-2 rounded-xl font-bold inline-block">
-
-                    PRODUK AKTIVASI
-
-                  </div>
-
-                )}
-
-              </div>
-
-              <div className="flex flex-wrap gap-3 mt-6">
-
-                {/* PRODUK AKTIVASI */}
-                <button
-                  onClick={async () => {
-
-                    await supabase
-                      .from("products")
-                      .update({
-                        is_activation_product: false,
-                      })
-                      .neq("id", 0);
-
-                    await supabase
-                      .from("products")
-                      .update({
-                        is_activation_product: true,
-                      })
-                      .eq(
-                        "id",
-                        product.id
-                      );
-
-                    alert(
-                      "Produk aktivasi berhasil diganti"
-                    );
-
-                    getData();
-
-                  }}
-                  className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
-                >
-                  Jadikan Aktivasi
-                </button>
-
-                {/* STATUS */}
-                <button
-                  onClick={async () => {
-
-                    await supabase
-                      .from("products")
-                      .update({
-                        is_active:
-                          !product.is_active,
-                      })
-                      .eq(
-                        "id",
-                        product.id
-                      );
-
-                    getData();
-
-                  }}
-                  className="bg-yellow-500 text-black px-5 py-3 rounded-2xl font-bold"
-                >
-                  {product.is_active
-                    ? "Nonaktifkan"
-                    : "Aktifkan"}
-                </button>
-
-                {/* HAPUS */}
-                <button
-                  onClick={async () => {
-
-                    const confirmDelete =
-                      confirm(
-                        "Hapus produk?"
-                      );
-
-                    if (!confirmDelete)
-                      return;
-
-                    await supabase
-                      .from("products")
-                      .delete()
-                      .eq(
-                        "id",
-                        product.id
-                      );
-
-                    getData();
-
-                  }}
-                  className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
-                >
-                  Hapus
-                </button>
-
-              </div>
-
-            </div>
-
-          ))}
-
-        </div>
-
       </div>
-
-      {/* LOGOUT */}
-      <button
-        onClick={() => {
-
-          localStorage.removeItem(
-            "admin"
-          );
-
-          window.location.reload();
-
-        }}
-        className="mt-10 bg-red-500 px-6 py-3 rounded-2xl font-bold"
-      >
-        Logout Admin
-      </button>
 
     </main>
 
