@@ -150,7 +150,7 @@ setWithdraws(withdrawData || []);
       ? "AKTIF"
       : "FREE"}
   </p>
-  {member.status !== "pending" && (
+  {member.status === "free" && (
   <button
     onClick={async () => {
 
