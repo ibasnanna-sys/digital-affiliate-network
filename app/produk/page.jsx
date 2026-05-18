@@ -14,6 +14,9 @@ export default function ProdukPage() {
   const [loading, setLoading] =
     useState(true);
 
+  const [buyingId, setBuyingId] =
+    useState(null);
+
   // =========================
   // GET MEMBER & PRODUCTS
   // =========================
@@ -75,6 +78,8 @@ export default function ProdukPage() {
 
       }
 
+      setBuyingId(product.id);
+
       // =========================
       // INSERT TRANSACTION
       // =========================
@@ -125,6 +130,8 @@ export default function ProdukPage() {
 
         alert("Order gagal");
 
+        setBuyingId(null);
+
         return;
 
       }
@@ -137,6 +144,11 @@ export default function ProdukPage() {
         member.status !== "active"
       ) {
 
+        const updatedMember = {
+          ...member,
+          status: "active",
+        };
+
         await supabase
           .from("members")
           .update({
@@ -144,29 +156,40 @@ export default function ProdukPage() {
           })
           .eq("id", member.id);
 
+        setMember(updatedMember);
+
+        localStorage.setItem(
+          "member",
+          JSON.stringify(updatedMember)
+        );
+
       }
 
       alert(
         "Order berhasil masuk"
       );
 
-      window.location.reload();
+      setBuyingId(null);
 
     };
 
   return (
 
-    <main className="min-h-screen bg-black text-white p-6">
+    <main className="min-h-screen bg-black text-white p-4 md:p-6">
 
       {/* HEADER */}
-      <div className="mb-10">
+      <div className="mb-8 md:mb-10">
 
-        <h1 className="text-5xl font-bold text-cyan-400">
+        <h1 className="text-3xl md:text-5xl font-bold text-cyan-400">
+
           Produk Digital
+
         </h1>
 
-        <p className="text-zinc-400 mt-3">
+        <p className="text-zinc-400 mt-3 text-sm md:text-base">
+
           Paket Data, Pulsa, PPOB
+
         </p>
 
       </div>
@@ -174,20 +197,30 @@ export default function ProdukPage() {
       {/* MEMBER INFO */}
       {member && (
 
-        <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6 mb-8">
+        <div className="
+          bg-zinc-900
+          border border-cyan-500/20
+          rounded-3xl
+          p-5 md:p-6
+          mb-8
+        ">
 
-          <h2 className="text-3xl font-bold">
+          <h2 className="text-2xl md:text-3xl font-bold break-words">
+
             {member.name}
+
           </h2>
 
-          <p className="text-zinc-400 mt-2">
+          <p className="text-zinc-400 mt-2 break-all">
+
             {member.whatsapp}
+
           </p>
 
           <div className="mt-5">
 
             <span
-              className={`px-4 py-2 rounded-xl font-bold ${
+              className={`px-4 py-2 rounded-xl font-bold text-sm ${
                 member.status === "active"
                   ? "bg-green-500 text-white"
                   : member.status === "pending"
@@ -216,7 +249,9 @@ export default function ProdukPage() {
         <div className="bg-zinc-900 rounded-3xl p-6">
 
           <p className="text-zinc-400">
+
             Memuat produk...
+
           </p>
 
         </div>
@@ -230,7 +265,9 @@ export default function ProdukPage() {
         <div className="bg-zinc-900 rounded-3xl p-6">
 
           <p className="text-zinc-400">
+
             Produk belum tersedia
+
           </p>
 
         </div>
@@ -238,115 +275,170 @@ export default function ProdukPage() {
       )}
 
       {/* PRODUCTS */}
-      <div className="grid gap-5">
+      {!loading && products.length > 0 && (
 
-        {products.map((product) => (
+        <div className="
+          grid
+          grid-cols-1
+          md:grid-cols-2
+          xl:grid-cols-3
+          gap-5
+        ">
 
-          <div
-            key={product.id}
-            className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
-          >
+          {products.map((product) => (
 
-            {/* TOP */}
-            <div className="flex items-start justify-between gap-4">
+            <div
+              key={product.id}
+              className="
+                bg-zinc-900
+                border border-cyan-500/20
+                rounded-3xl
+                p-5
+                transition-all
+                hover:border-cyan-400
+                hover:scale-[1.01]
+              "
+            >
 
-              <div>
+              {/* TOP */}
+              <div className="flex items-start justify-between gap-4">
 
-                <h2 className="text-3xl font-bold text-cyan-400">
-                  {product.name}
-                </h2>
+                <div>
 
-                <p className="text-zinc-400 mt-2">
-                  {product.category}
-                </p>
+                  <h2 className="text-2xl md:text-3xl font-bold text-cyan-400 break-words">
 
-              </div>
+                    {product.name}
 
-              {product.is_activation && (
+                  </h2>
 
-                <div className="bg-yellow-500 text-black px-3 py-1 rounded-xl text-sm font-bold">
+                  <p className="text-zinc-400 mt-2 text-sm md:text-base">
 
-                  AKTIVASI
+                    {product.category}
+
+                  </p>
 
                 </div>
 
-              )}
+                {product.is_activation && (
 
-            </div>
+                  <div className="
+                    bg-yellow-500
+                    text-black
+                    px-3
+                    py-1
+                    rounded-xl
+                    text-xs
+                    md:text-sm
+                    font-bold
+                    whitespace-nowrap
+                  ">
 
-            {/* PRICE */}
-            <div className="mt-6">
+                    AKTIVASI
 
-              <p className="text-zinc-400">
-                Harga Produk
-              </p>
+                  </div>
 
-              <h3 className="text-4xl font-bold text-green-400 mt-2">
+                )}
 
-                Rp{" "}
-                {Number(
-                  product.price || 0
-                ).toLocaleString()}
+              </div>
 
-              </h3>
-
-            </div>
-
-            {/* INFO */}
-            <div className="grid grid-cols-2 gap-4 mt-6">
-
-              <div className="bg-black rounded-2xl p-4">
+              {/* PRICE */}
+              <div className="mt-6">
 
                 <p className="text-zinc-400 text-sm">
-                  Profit
+
+                  Harga Produk
+
                 </p>
 
-                <p className="text-cyan-400 text-2xl font-bold mt-2">
+                <h3 className="text-3xl md:text-4xl font-bold text-green-400 mt-2 break-words">
 
                   Rp{" "}
                   {Number(
-                    product.profit || 0
+                    product.price || 0
                   ).toLocaleString()}
 
-                </p>
+                </h3>
 
               </div>
 
-              <div className="bg-black rounded-2xl p-4">
+              {/* INFO */}
+              <div className="grid grid-cols-2 gap-4 mt-6">
 
-                <p className="text-zinc-400 text-sm">
-                  Bonus Referral
-                </p>
+                <div className="bg-black rounded-2xl p-4">
 
-                <p className="text-green-400 text-2xl font-bold mt-2">
+                  <p className="text-zinc-400 text-xs md:text-sm">
 
-                  {product.referral_bonus_percent || 0}%
+                    Profit
 
-                </p>
+                  </p>
+
+                  <p className="text-cyan-400 text-lg md:text-2xl font-bold mt-2 break-words">
+
+                    Rp{" "}
+                    {Number(
+                      product.profit || 0
+                    ).toLocaleString()}
+
+                  </p>
+
+                </div>
+
+                <div className="bg-black rounded-2xl p-4">
+
+                  <p className="text-zinc-400 text-xs md:text-sm">
+
+                    Bonus Referral
+
+                  </p>
+
+                  <p className="text-green-400 text-lg md:text-2xl font-bold mt-2">
+
+                    {product.referral_bonus_percent || 0}%
+
+                  </p>
+
+                </div>
 
               </div>
+
+              {/* BUTTON */}
+              <button
+                disabled={
+                  buyingId === product.id
+                }
+                onClick={() =>
+                  handleBuyProduct(
+                    product
+                  )
+                }
+                className="
+                  w-full
+                  mt-8
+                  bg-cyan-400
+                  text-black
+                  py-4
+                  rounded-2xl
+                  font-bold
+                  transition-all
+                  hover:bg-cyan-300
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed
+                "
+              >
+
+                {buyingId === product.id
+                  ? "Memproses..."
+                  : "Beli Produk"}
+
+              </button>
 
             </div>
 
-            {/* BUTTON */}
-            <button
-              onClick={() =>
-                handleBuyProduct(
-                  product
-                )
-              }
-              className="w-full mt-8 bg-cyan-400 text-black py-4 rounded-2xl font-bold"
-            >
+          ))}
 
-              Beli Produk
+        </div>
 
-            </button>
-
-          </div>
-
-        ))}
-
-      </div>
+      )}
 
     </main>
 
