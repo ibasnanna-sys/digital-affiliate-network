@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -28,22 +27,8 @@ export default function AdminPage() {
   const [productName, setProductName] =
     useState("");
 
-  const [category, setCategory] =
-    useState("");
-
-  const [modalPrice, setModalPrice] =
-    useState("");
-
   const [sellPrice, setSellPrice] =
     useState("");
-
-  const [profit, setProfit] =
-    useState("");
-
-  const [
-    bonusReferral,
-    setBonusReferral,
-  ] = useState("");
 
   // =========================
   // CHECK LOGIN
@@ -163,7 +148,7 @@ export default function AdminPage() {
   }
 
   // =========================
-  // DASHBOARD
+  // DASHBOARD ADMIN
   // =========================
   return (
 
@@ -235,9 +220,7 @@ export default function AdminPage() {
                 className={`font-bold ${
                   member.status === "active"
                     ? "text-green-400"
-                    : member.status === "pending"
-                    ? "text-yellow-400"
-                    : "text-zinc-400"
+                    : "text-yellow-400"
                 }`}
               >
 
@@ -246,90 +229,9 @@ export default function AdminPage() {
 
                 {member.status === "active"
                   ? "AKTIF"
-                  : member.status === "pending"
-                  ? "PENDING"
-                  : "FROZEN"}
+                  : "PENDING"}
 
               </p>
-
-              {/* BUTTON AKTIVASI */}
-              {member.status ===
-                "pending" && (
-
-                <button
-                  onClick={async () => {
-
-                    // AKTIFKAN MEMBER
-                    await supabase
-                      .from("members")
-                      .update({
-                        status: "active",
-                      })
-                      .eq(
-                        "id",
-                        member.id
-                      );
-
-                    // BONUS SPONSOR
-                    if (
-                      member.sponsor_code
-                    ) {
-
-                      const {
-                        data: sponsor,
-                      } =
-                        await supabase
-                          .from(
-                            "members"
-                          )
-                          .select("*")
-                          .eq(
-                            "referral_code",
-                            member.sponsor_code
-                          )
-                          .single();
-
-                      if (sponsor) {
-
-                        await supabase
-                          .from(
-                            "members"
-                          )
-                          .update({
-                            saldo:
-                              Number(
-                                sponsor.saldo ||
-                                  0
-                              ) + 1000,
-
-                            total_referral:
-                              Number(
-                                sponsor.total_referral ||
-                                  0
-                              ) + 1,
-                          })
-                          .eq(
-                            "id",
-                            sponsor.id
-                          );
-
-                      }
-
-                    }
-
-                    alert(
-                      "Member berhasil diaktivasi"
-                    );
-
-                    getData();
-
-                  }}
-                  className="mt-5 bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
-                >
-                  Aktivasi Member
-                </button>
-
-              )}
 
             </div>
 
@@ -411,36 +313,6 @@ export default function AdminPage() {
                 <button
                   onClick={async () => {
 
-                    const memberData =
-                      members.find(
-                        (m) =>
-                          m.whatsapp ===
-                          item.whatsapp
-                      );
-
-                    if (memberData) {
-
-                      const newSaldo =
-                        Number(
-                          memberData.saldo || 0
-                        ) +
-                        Number(
-                          item.amount || 0
-                        );
-
-                      await supabase
-                        .from("members")
-                        .update({
-                          saldo:
-                            newSaldo,
-                        })
-                        .eq(
-                          "id",
-                          memberData.id
-                        );
-
-                    }
-
                     await supabase
                       .from("withdraws")
                       .update({
@@ -501,32 +373,8 @@ export default function AdminPage() {
             />
 
             <input
-              type="text"
-              placeholder="Kategori"
-              value={category}
-              onChange={(e) =>
-                setCategory(
-                  e.target.value
-                )
-              }
-              className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-            />
-
-            <input
               type="number"
-              placeholder="Harga Modal"
-              value={modalPrice}
-              onChange={(e) =>
-                setModalPrice(
-                  e.target.value
-                )
-              }
-              className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-            />
-
-            <input
-              type="number"
-              placeholder="Harga Jual"
+              placeholder="Harga Produk"
               value={sellPrice}
               onChange={(e) =>
                 setSellPrice(
@@ -536,78 +384,46 @@ export default function AdminPage() {
               className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
             />
 
-            <input
-              type="number"
-              placeholder="Profit"
-              value={profit}
-              onChange={(e) =>
-                setProfit(
-                  e.target.value
-                )
-              }
-              className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-            />
-
-            <input
-              type="number"
-              placeholder="Bonus Referral (%)"
-              value={bonusReferral}
-              onChange={(e) =>
-                setBonusReferral(
-                  e.target.value
-                )
-              }
-              className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-            />
-
+            {/* TAMBAH PRODUK */}
             <button
               onClick={async () => {
 
-                await supabase
-                  .from("products")
-                  .insert([
-                    {
-                      name:
-                        productName,
+                const { error } =
+                  await supabase
+                    .from("products")
+                    .insert([
+                      {
+                        name:
+                          productName,
 
-                      category,
+                        price:
+                          Number(
+                            sellPrice
+                          ),
 
-                      modal_price:
-                        Number(
-                          modalPrice
-                        ),
+                        is_active: true,
 
-                      sell_price:
-                        Number(
-                          sellPrice
-                        ),
+                        is_activation_product: false,
+                      },
+                    ]);
 
-                      profit:
-                        Number(
-                          profit
-                        ),
+                if (error) {
 
-                      bonus_referral:
-                        Number(
-                          bonusReferral
-                        ),
+                  console.log(error);
 
-                      status: true,
+                  alert(
+                    "Gagal tambah produk"
+                  );
 
-                      is_activation: false,
-                    },
-                  ]);
+                  return;
+                }
 
                 alert(
                   "Produk berhasil ditambah"
                 );
 
                 setProductName("");
-                setCategory("");
-                setModalPrice("");
                 setSellPrice("");
-                setProfit("");
-                setBonusReferral("");
 
                 getData();
 
@@ -635,57 +451,34 @@ export default function AdminPage() {
                 {product.name}
               </h3>
 
-              <p className="text-zinc-400 mt-2">
-                {product.category}
-              </p>
-
               <div className="mt-5 space-y-2">
 
                 <p className="text-cyan-400">
 
-                  Harga Jual:
+                  Harga:
                   {" "}
                   Rp{" "}
                   {Number(
-                    product.sell_price || 0
+                    product.price || 0
                   ).toLocaleString()}
-
-                </p>
-
-                <p className="text-green-400">
-
-                  Profit:
-                  {" "}
-                  Rp{" "}
-                  {Number(
-                    product.profit || 0
-                  ).toLocaleString()}
-
-                </p>
-
-                <p className="text-yellow-400">
-
-                  Bonus Referral:
-                  {" "}
-                  {product.bonus_referral || 0}%
 
                 </p>
 
                 <p
                   className={`font-bold ${
-                    product.status
+                    product.is_active
                       ? "text-green-400"
                       : "text-red-400"
                   }`}
                 >
 
-                  {product.status
+                  {product.is_active
                     ? "AKTIF"
                     : "NONAKTIF"}
 
                 </p>
 
-                {product.is_activation && (
+                {product.is_activation_product && (
 
                   <div className="bg-cyan-400 text-black px-4 py-2 rounded-xl font-bold inline-block">
 
@@ -706,14 +499,14 @@ export default function AdminPage() {
                     await supabase
                       .from("products")
                       .update({
-                        is_activation: false,
+                        is_activation_product: false,
                       })
                       .neq("id", 0);
 
                     await supabase
                       .from("products")
                       .update({
-                        is_activation: true,
+                        is_activation_product: true,
                       })
                       .eq(
                         "id",
@@ -739,8 +532,8 @@ export default function AdminPage() {
                     await supabase
                       .from("products")
                       .update({
-                        status:
-                          !product.status,
+                        is_active:
+                          !product.is_active,
                       })
                       .eq(
                         "id",
@@ -752,7 +545,7 @@ export default function AdminPage() {
                   }}
                   className="bg-yellow-500 text-black px-5 py-3 rounded-2xl font-bold"
                 >
-                  {product.status
+                  {product.is_active
                     ? "Nonaktifkan"
                     : "Aktifkan"}
                 </button>
@@ -795,7 +588,9 @@ export default function AdminPage() {
 
       </div>
 
-      {/* LOGOUT */}
+      {/* =========================
+      LOGOUT
+      ========================= */}
       <button
         onClick={() => {
 
