@@ -51,14 +51,15 @@ export default function RegisterPage() {
       setLoading(true);
 
       // =========================
-      // CEK WHATSAPP
+      // CHECK WHATSAPP
       // =========================
-      const { data: checkMember } =
-        await supabase
-          .from("members")
-          .select("*")
-          .eq("whatsapp", whatsapp)
-          .single();
+      const {
+        data: checkMember,
+      } = await supabase
+        .from("members")
+        .select("*")
+        .eq("whatsapp", whatsapp)
+        .single();
 
       if (checkMember) {
 
@@ -109,7 +110,9 @@ export default function RegisterPage() {
 
         console.log(error);
 
-        alert("Registrasi gagal");
+        alert(
+          "Registrasi gagal"
+        );
 
         setLoading(false);
 
@@ -129,50 +132,57 @@ export default function RegisterPage() {
         "Registrasi berhasil"
       );
 
-      router.push("/dashboard");
+      router.push(
+        "/dashboard"
+      );
 
     };
 
   return (
 
-    <main className="
-      min-h-screen
-      bg-black
-      text-white
-      p-4
-      md:p-6
-      flex
-      items-center
-      justify-center
-    ">
+    <main
+      className="
+        min-h-screen
+        bg-black
+        text-white
+        p-4
+        md:p-6
+        flex
+        items-center
+        justify-center
+      "
+    >
 
-      <div className="
-        w-full
-        max-w-2xl
-        bg-zinc-900
-        border border-cyan-500/20
-        rounded-3xl
-        p-6 md:p-8
-      ">
+      <div
+        className="
+          w-full
+          max-w-2xl
+          bg-zinc-900
+          border
+          border-cyan-500/20
+          rounded-3xl
+          p-6
+          md:p-8
+        "
+      >
 
         {/* HEADER */}
         <div className="mb-8">
 
-          <h1 className="
-            text-3xl
-            md:text-5xl
-            font-bold
-            text-cyan-400
-          ">
+          <h1
+            className="
+              text-3xl
+              md:text-5xl
+              font-bold
+              text-cyan-400
+            "
+          >
 
             Registrasi Member
 
           </h1>
 
-          <p className="
-            text-zinc-400
-            mt-3
-          ">
+          <p className="text-zinc-400 mt-3">
 
             Daftar menjadi member DAN
 
@@ -182,19 +192,23 @@ export default function RegisterPage() {
 
         {/* FORM */}
         <form
-          onSubmit={handleRegister}
+          onSubmit={
+            handleRegister
+          }
           className="space-y-5"
         >
 
           {/* NAMA */}
           <div>
 
-            <label className="
-              text-sm
-              text-zinc-400
-              block
-              mb-2
-            ">
+            <label
+              className="
+                text-sm
+                text-zinc-400
+                block
+                mb-2
+              "
+            >
 
               Nama Lengkap
 
@@ -204,13 +218,16 @@ export default function RegisterPage() {
               type="text"
               value={name}
               onChange={(e) =>
-                setName(e.target.value)
+                setName(
+                  e.target.value
+                )
               }
               placeholder="Masukkan nama lengkap"
               className="
                 w-full
                 bg-black
-                border border-zinc-700
+                border
+                border-zinc-700
                 rounded-2xl
                 p-4
                 outline-none
@@ -223,19 +240,21 @@ export default function RegisterPage() {
           {/* WHATSAPP */}
           <div>
 
-            <label className="
-              text-sm
-              text-zinc-400
-              block
-              mb-2
-            ">
+            <label
+              className="
+                text-sm
+                text-zinc-400
+                block
+                mb-2
+              "
+            >
 
               Nomor WhatsApp
 
             </label>
 
             <input
-              type="number"
+              type="text"
               value={whatsapp}
               onChange={(e) =>
                 setWhatsapp(
@@ -246,7 +265,8 @@ export default function RegisterPage() {
               className="
                 w-full
                 bg-black
-                border border-zinc-700
+                border
+                border-zinc-700
                 rounded-2xl
                 p-4
                 outline-none
@@ -259,12 +279,14 @@ export default function RegisterPage() {
           {/* ALAMAT */}
           <div>
 
-            <label className="
-              text-sm
-              text-zinc-400
-              block
-              mb-2
-            ">
+            <label
+              className="
+                text-sm
+                text-zinc-400
+                block
+                mb-2
+              "
+            >
 
               Alamat
 
@@ -281,7 +303,8 @@ export default function RegisterPage() {
               className="
                 w-full
                 bg-black
-                border border-zinc-700
+                border
+                border-zinc-700
                 rounded-2xl
                 p-4
                 outline-none
@@ -295,12 +318,14 @@ export default function RegisterPage() {
           {/* KOTA */}
           <div>
 
-            <label className="
-              text-sm
-              text-zinc-400
-              block
-              mb-2
-            ">
+            <label
+              className="
+                text-sm
+                text-zinc-400
+                block
+                mb-2
+              "
+            >
 
               Kota
 
@@ -318,7 +343,8 @@ export default function RegisterPage() {
               className="
                 w-full
                 bg-black
-                border border-zinc-700
+                border
+                border-zinc-700
                 rounded-2xl
                 p-4
                 outline-none
@@ -331,12 +357,14 @@ export default function RegisterPage() {
           {/* PASSWORD */}
           <div>
 
-            <label className="
-              text-sm
-              text-zinc-400
-              block
-              mb-2
-            ">
+            <label
+              className="
+                text-sm
+                text-zinc-400
+                block
+                mb-2
+              "
+            >
 
               Password
 
@@ -354,7 +382,8 @@ export default function RegisterPage() {
               className="
                 w-full
                 bg-black
-                border border-zinc-700
+                border
+                border-zinc-700
                 rounded-2xl
                 p-4
                 outline-none
@@ -393,3 +422,7 @@ export default function RegisterPage() {
       </div>
 
     </main>
+
+  );
+
+}
