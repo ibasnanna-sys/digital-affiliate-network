@@ -46,6 +46,9 @@ export default function ProdukPage() {
         .from("products")
         .select("*")
         .eq("status", "active")
+        .order("is_activation", {
+          ascending: false,
+        })
         .order("id", {
           ascending: true,
         });
@@ -175,20 +178,55 @@ export default function ProdukPage() {
 
   return (
 
-    <main className="min-h-screen bg-black text-white p-4 md:p-6">
+    <main
+      className="
+        min-h-screen
+        bg-black
+        text-white
+        p-4
+        md:p-6
+      "
+    >
 
       {/* HEADER */}
       <div className="mb-8 md:mb-10">
 
-        <h1 className="text-3xl md:text-5xl font-bold text-cyan-400">
+        <h1
+          className="
+            text-4xl
+            md:text-5xl
+            font-bold
+            text-cyan-400
+          "
+        >
 
           Produk Digital
 
         </h1>
 
-        <p className="text-zinc-400 mt-3 text-sm md:text-base">
+        <p
+          className="
+            text-zinc-400
+            mt-3
+            text-sm
+            md:text-base
+          "
+        >
 
           Paket Data, Pulsa, PPOB
+
+        </p>
+
+        <p
+          className="
+            text-cyan-400
+            mt-4
+            text-sm
+            md:text-base
+          "
+        >
+
+          Selamat datang di DAN Digital Network
 
         </p>
 
@@ -197,41 +235,86 @@ export default function ProdukPage() {
       {/* MEMBER INFO */}
       {member && (
 
-        <div className="
-          bg-zinc-900
-          border border-cyan-500/20
-          rounded-3xl
-          p-5 md:p-6
-          mb-8
-        ">
+        <div
+          className="
+            bg-zinc-900
+            border
+            border-cyan-500/20
+            rounded-3xl
+            p-5
+            md:p-6
+            mb-8
+          "
+        >
 
-          <h2 className="text-2xl md:text-3xl font-bold break-words">
+          <h2
+            className="
+              text-3xl
+              md:text-4xl
+              font-bold
+              break-words
+            "
+          >
 
             {member.name}
 
           </h2>
 
-          <p className="text-zinc-400 mt-2 break-all">
+          <p
+            className="
+              text-zinc-400
+              mt-3
+              break-all
+            "
+          >
 
             {member.whatsapp}
 
           </p>
 
+          {/* MEMBER ID */}
+          <p
+            className="
+              text-cyan-400
+              mt-2
+              font-bold
+            "
+          >
+
+            ID Member :
+            {" "}
+            {member.member_code}
+
+          </p>
+
+          {/* STATUS */}
           <div className="mt-5">
 
             <span
-              className={`px-4 py-2 rounded-xl font-bold text-sm ${
-                member.status === "active"
-                  ? "bg-green-500 text-white"
-                  : member.status === "pending"
-                  ? "bg-yellow-500 text-black"
-                  : "bg-zinc-700 text-white"
-              }`}
+              className={`
+                px-4
+                py-2
+                rounded-2xl
+                text-sm
+                font-bold
+                border
+                ${
+                  member.status ===
+                  "active"
+                    ? "bg-green-500/20 border-green-500 text-green-400"
+                    : member.status ===
+                      "pending"
+                    ? "bg-yellow-500/20 border-yellow-500 text-yellow-400"
+                    : "bg-zinc-800 border-zinc-700 text-zinc-300"
+                }
+              `}
             >
 
-              {member.status === "active"
+              {member.status ===
+              "active"
                 ? "ACTIVE"
-                : member.status === "pending"
+                : member.status ===
+                  "pending"
                 ? "PENDING"
                 : "FROZEN"}
 
@@ -246,7 +329,13 @@ export default function ProdukPage() {
       {/* LOADING */}
       {loading && (
 
-        <div className="bg-zinc-900 rounded-3xl p-6">
+        <div
+          className="
+            bg-zinc-900
+            rounded-3xl
+            p-6
+          "
+        >
 
           <p className="text-zinc-400">
 
@@ -262,7 +351,13 @@ export default function ProdukPage() {
       {!loading &&
         products.length === 0 && (
 
-        <div className="bg-zinc-900 rounded-3xl p-6">
+        <div
+          className="
+            bg-zinc-900
+            rounded-3xl
+            p-6
+          "
+        >
 
           <p className="text-zinc-400">
 
@@ -275,15 +370,18 @@ export default function ProdukPage() {
       )}
 
       {/* PRODUCTS */}
-      {!loading && products.length > 0 && (
+      {!loading &&
+        products.length > 0 && (
 
-        <div className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          xl:grid-cols-3
-          gap-5
-        ">
+        <div
+          className="
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-3
+            gap-5
+          "
+        >
 
           {products.map((product) => (
 
@@ -291,7 +389,8 @@ export default function ProdukPage() {
               key={product.id}
               className="
                 bg-zinc-900
-                border border-cyan-500/20
+                border
+                border-cyan-500/20
                 rounded-3xl
                 p-5
                 transition-all
@@ -301,17 +400,36 @@ export default function ProdukPage() {
             >
 
               {/* TOP */}
-              <div className="flex items-start justify-between gap-4">
+              <div
+                className="
+                  flex
+                  items-start
+                  justify-between
+                  gap-4
+                "
+              >
 
                 <div>
 
-                  <h2 className="text-2xl md:text-3xl font-bold text-cyan-400 break-words">
+                  <h2
+                    className="
+                      text-3xl
+                      font-bold
+                      text-cyan-400
+                      break-words
+                    "
+                  >
 
                     {product.name}
 
                   </h2>
 
-                  <p className="text-zinc-400 mt-2 text-sm md:text-base">
+                  <p
+                    className="
+                      text-zinc-400
+                      mt-2
+                    "
+                  >
 
                     {product.category}
 
@@ -321,17 +439,21 @@ export default function ProdukPage() {
 
                 {product.is_activation && (
 
-                  <div className="
-                    bg-yellow-500
-                    text-black
-                    px-3
-                    py-1
-                    rounded-xl
-                    text-xs
-                    md:text-sm
-                    font-bold
-                    whitespace-nowrap
-                  ">
+                  <div
+                    className="
+                      bg-yellow-500/20
+                      border
+                      border-yellow-500
+                      text-yellow-400
+                      px-3
+                      py-1
+                      rounded-2xl
+                      text-xs
+                      md:text-sm
+                      font-bold
+                      whitespace-nowrap
+                    "
+                  >
 
                     AKTIVASI
 
@@ -344,13 +466,26 @@ export default function ProdukPage() {
               {/* PRICE */}
               <div className="mt-6">
 
-                <p className="text-zinc-400 text-sm">
+                <p
+                  className="
+                    text-zinc-400
+                    text-sm
+                  "
+                >
 
                   Harga Produk
 
                 </p>
 
-                <h3 className="text-3xl md:text-4xl font-bold text-green-400 mt-2 break-words">
+                <h3
+                  className="
+                    text-4xl
+                    font-bold
+                    text-green-400
+                    mt-2
+                    break-words
+                  "
+                >
 
                   Rp{" "}
                   {Number(
@@ -364,7 +499,8 @@ export default function ProdukPage() {
               {/* BUTTON */}
               <button
                 disabled={
-                  buyingId === product.id
+                  buyingId ===
+                  product.id
                 }
                 onClick={() =>
                   handleBuyProduct(
@@ -373,7 +509,7 @@ export default function ProdukPage() {
                 }
                 className="
                   w-full
-                  mt-6
+                  mt-8
                   bg-cyan-400
                   text-black
                   py-4
@@ -386,7 +522,8 @@ export default function ProdukPage() {
                 "
               >
 
-                {buyingId === product.id
+                {buyingId ===
+                product.id
                   ? "Memproses..."
                   : "Beli Produk"}
 
