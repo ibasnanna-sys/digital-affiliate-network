@@ -1,4 +1,4 @@
-```javascript
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -443,4 +443,3 @@ const getProducts = async () => {
   );
 
 }
-```
