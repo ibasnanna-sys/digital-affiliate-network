@@ -507,7 +507,13 @@ if (member) {
     Saldo Bonus
   </p>
           
-            <div className="mt-6">
+
+  <h3 className="text-3xl font-bold text-green-400">
+    Rp {member.saldo || 0}
+  </h3>
+</div>
+
+         <div className="mt-6">
 
   <p className="text-zinc-400">
     Status Member
@@ -540,12 +546,7 @@ if (member) {
 
   </div>
 
-            </div>
-
-  <h3 className="text-3xl font-bold text-green-400">
-    Rp {member.saldo || 0}
-  </h3>
-</div>
+</div> 
           <div className="mt-6">
   <p className="text-zinc-400">
     Total Referral
