@@ -201,6 +201,57 @@ setWithdraws(withdrawData || []);
       ? "AKTIF"
       : "FREE"}
   </p>
+  {member.status !== "active" && (
+  <button
+    onClick={async () => {
+
+      await supabase
+        .from("members")
+        .update({
+          status: "active",
+        })
+        .eq("id", member.id);
+
+      // BONUS SPONSOR
+      if (member.sponsor_code) {
+
+        const { data: sponsor } =
+          await supabase
+            .from("members")
+            .select("*")
+            .eq(
+              "referral_code",
+              member.sponsor_code
+            )
+            .single();
+
+        if (sponsor) {
+
+          await supabase
+            .from("members")
+            .update({
+              saldo:
+                Number(sponsor.saldo || 0) + 1000,
+
+              total_referral:
+                Number(
+                  sponsor.total_referral || 0
+                ) + 1,
+            })
+            .eq("id", sponsor.id);
+        }
+      }
+
+      alert("Member berhasil diaktivasi");
+
+      getMembers();
+
+    }}
+    className="mt-5 bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
+  >
+    Aktivasi Member
+  </button>
+)}
 
 </div>
           </div>
