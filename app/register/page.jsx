@@ -1,3 +1,4 @@
+fix register path
 "use client";
 
 import { useState } from "react";
