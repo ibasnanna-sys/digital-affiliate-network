@@ -45,22 +45,6 @@ export default function AdminPage() {
   ] = useState("");
 
   // =========================
-  // CHECK LOGIN
-  // =========================
-  useEffect(() => {
-
-    const adminLogin =
-      localStorage.getItem("admin");
-
-    if (adminLogin === "true") {
-      setIsAdmin(true);
-    }
-
-    getData();
-
-  }, []);
-
-  // =========================
   // GET DATA
   // =========================
   const getData = async () => {
@@ -76,7 +60,7 @@ export default function AdminPage() {
 
     setMembers(memberData || []);
 
-    // WITHDRAW
+    // WITHDRAWS
     const { data: withdrawData } =
       await supabase
         .from("withdraws")
@@ -97,8 +81,23 @@ export default function AdminPage() {
         });
 
     setProducts(productData || []);
-
   };
+
+  // =========================
+  // USE EFFECT
+  // =========================
+  useEffect(() => {
+
+    const adminLogin =
+      localStorage.getItem("admin");
+
+    if (adminLogin === "true") {
+      setIsAdmin(true);
+    }
+
+    getData();
+
+  }, []);
 
   // =========================
   // LOGIN ADMIN
@@ -251,8 +250,9 @@ export default function AdminPage() {
 
               </p>
 
-              {/* AKTIVASI MEMBER */}
-              {member.status !== "active" && (
+              {/* TOMBOL AKTIVASI */}
+              {member.status ===
+                "pending" && (
 
                 <button
                   onClick={async () => {
@@ -295,14 +295,12 @@ export default function AdminPage() {
                           .update({
                             saldo:
                               Number(
-                                sponsor.saldo ||
-                                  0
+                                sponsor.saldo || 0
                               ) + 1000,
 
                             total_referral:
                               Number(
-                                sponsor.total_referral ||
-                                  0
+                                sponsor.total_referral || 0
                               ) + 1,
                           })
                           .eq(
@@ -366,7 +364,7 @@ export default function AdminPage() {
 
                 Rp{" "}
                 {Number(
-                  item.amount
+                  item.amount || 0
                 ).toLocaleString()}
 
               </p>
@@ -381,6 +379,7 @@ export default function AdminPage() {
 
               <div className="flex gap-3 mt-5">
 
+                {/* APPROVE */}
                 <button
                   onClick={async () => {
 
@@ -403,8 +402,39 @@ export default function AdminPage() {
                   Selesaikan
                 </button>
 
+                {/* REJECT */}
                 <button
                   onClick={async () => {
+
+                    const memberData =
+                      members.find(
+                        (m) =>
+                          m.whatsapp ===
+                          item.whatsapp
+                      );
+
+                    if (memberData) {
+
+                      const newSaldo =
+                        Number(
+                          memberData.saldo || 0
+                        ) +
+                        Number(
+                          item.amount || 0
+                        );
+
+                      await supabase
+                        .from("members")
+                        .update({
+                          saldo:
+                            newSaldo,
+                        })
+                        .eq(
+                          "id",
+                          memberData.id
+                        );
+
+                    }
 
                     await supabase
                       .from("withdraws")
@@ -436,7 +466,7 @@ export default function AdminPage() {
       </div>
 
       {/* =========================
-      PRODUCT MANAGEMENT
+      MANAGEMENT PRODUK
       ========================= */}
       <div className="mt-14">
 
@@ -444,7 +474,7 @@ export default function AdminPage() {
           Management Produk
         </h2>
 
-        {/* FORM */}
+        {/* FORM TAMBAH PRODUK */}
         <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
 
           <h3 className="text-2xl font-bold mb-6">
@@ -535,31 +565,28 @@ export default function AdminPage() {
                       name:
                         productName,
 
-                      category,
+                      category:
+                        category,
 
                       modal_price:
-                        Number(
-                          modalPrice
-                        ),
+                        Number(modalPrice),
 
                       sell_price:
-                        Number(
-                          sellPrice
-                        ),
+                        Number(sellPrice),
 
                       profit:
-                        Number(
-                          profit
-                        ),
+                        Number(profit),
 
-                      bonus_referral:
+                      referral_bonus_percent:
                         Number(
                           bonusReferral
                         ),
 
-                      is_active: true,
+                      status:
+                        "active",
 
-                      is_activation_product: false,
+                      is_activation:
+                        false,
                     },
                   ]);
 
@@ -586,7 +613,202 @@ export default function AdminPage() {
 
         </div>
 
+        {/* LIST PRODUK */}
+        <div className="grid gap-5 mt-8">
+
+          {products.map((product) => (
+
+            <div
+              key={product.id}
+              className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
+            >
+
+              <h3 className="text-2xl font-bold">
+                {product.name}
+              </h3>
+
+              <p className="text-zinc-400 mt-2">
+                {product.category}
+              </p>
+
+              <div className="mt-5 space-y-2">
+
+                <p className="text-cyan-400">
+
+                  Harga Jual:
+                  {" "}
+                  Rp{" "}
+                  {Number(
+                    product.sell_price || 0
+                  ).toLocaleString()}
+
+                </p>
+
+                <p className="text-green-400">
+
+                  Profit:
+                  {" "}
+                  Rp{" "}
+                  {Number(
+                    product.profit || 0
+                  ).toLocaleString()}
+
+                </p>
+
+                <p className="text-yellow-400">
+
+                  Bonus Referral:
+                  {" "}
+                  {product.referral_bonus_percent || 0}%
+
+                </p>
+
+                <p
+                  className={`font-bold ${
+                    product.status === "active"
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+
+                  {product.status === "active"
+                    ? "AKTIF"
+                    : "NONAKTIF"}
+
+                </p>
+
+                {product.is_activation && (
+
+                  <div className="bg-cyan-400 text-black px-4 py-2 rounded-xl font-bold inline-block">
+
+                    PRODUK AKTIVASI
+
+                  </div>
+
+                )}
+
+              </div>
+
+              {/* TOMBOL PRODUK */}
+              <div className="flex flex-wrap gap-3 mt-6">
+
+                {/* PRODUK AKTIVASI */}
+                <button
+                  onClick={async () => {
+
+                    await supabase
+                      .from("products")
+                      .update({
+                        is_activation:
+                          false,
+                      })
+                      .neq("id", 0);
+
+                    await supabase
+                      .from("products")
+                      .update({
+                        is_activation:
+                          true,
+                      })
+                      .eq(
+                        "id",
+                        product.id
+                      );
+
+                    alert(
+                      "Produk aktivasi berhasil diganti"
+                    );
+
+                    getData();
+
+                  }}
+                  className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
+                >
+                  Jadikan Aktivasi
+                </button>
+
+                {/* STATUS */}
+                <button
+                  onClick={async () => {
+
+                    await supabase
+                      .from("products")
+                      .update({
+                        status:
+                          product.status ===
+                          "active"
+                            ? "inactive"
+                            : "active",
+                      })
+                      .eq(
+                        "id",
+                        product.id
+                      );
+
+                    getData();
+
+                  }}
+                  className="bg-yellow-500 text-black px-5 py-3 rounded-2xl font-bold"
+                >
+                  {product.status ===
+                  "active"
+                    ? "Nonaktifkan"
+                    : "Aktifkan"}
+                </button>
+
+                {/* HAPUS */}
+                <button
+                  onClick={async () => {
+
+                    const confirmDelete =
+                      confirm(
+                        "Hapus produk?"
+                      );
+
+                    if (!confirmDelete)
+                      return;
+
+                    await supabase
+                      .from("products")
+                      .delete()
+                      .eq(
+                        "id",
+                        product.id
+                      );
+
+                    getData();
+
+                  }}
+                  className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
+                >
+                  Hapus
+                </button>
+
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
+
       </div>
+
+      {/* LOGOUT */}
+      <button
+        onClick={() => {
+
+          localStorage.removeItem(
+            "admin"
+          );
+
+          window.location.reload();
+
+        }}
+        className="mt-10 bg-red-500 px-6 py-3 rounded-2xl font-bold"
+      >
+        Logout Admin
+      </button>
 
     </main>
 
