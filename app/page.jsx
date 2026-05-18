@@ -62,27 +62,7 @@ const [loginPassword, setLoginPassword] =
 
   alert("Register berhasil");
     
-    if (sponsorCode) {
-  
-
-  const { data: refMember } = await supabase
-    .from("members")
-    .select("*")
-    .eq("referral_code", sponsorCode)
-    .single();
-
-  if (refMember) {
-
-    await supabase
-      .from("members")
-      .update({
-        total_referral:
-          (refMember.total_referral || 0) + 1,
-      })
-      .eq("id", refMember.id);
-
-  }
-}
+    
     }
   
 };
