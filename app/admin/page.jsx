@@ -398,7 +398,7 @@ export default function AdminPage() {
 
                         price:
                           Number(
-                            sellPrice
+                            sellPrice || 0
                           ),
 
                         is_active: true,
@@ -416,6 +416,7 @@ export default function AdminPage() {
                   );
 
                   return;
+
                 }
 
                 alert(
@@ -588,9 +589,7 @@ export default function AdminPage() {
 
       </div>
 
-      {/* =========================
-      LOGOUT
-      ========================= */}
+      {/* LOGOUT */}
       <button
         onClick={() => {
 
