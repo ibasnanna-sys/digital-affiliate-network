@@ -5,12 +5,16 @@ import { supabase } from "../../lib/supabase";
 
 export default function ProdukPage() {
 
+  // =========================
+  // STATE
+  // =========================
   const [member, setMember] = useState(null);
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] =
+    useState([]);
 
   // =========================
-  // GET MEMBER
+  // GET MEMBER + PRODUCTS
   // =========================
   useEffect(() => {
 
@@ -31,11 +35,14 @@ export default function ProdukPage() {
   // =========================
   const getProducts = async () => {
 
-    const { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .eq("status", "active")
-      .order("id", { ascending: true });
+    const { data, error } =
+      await supabase
+        .from("products")
+        .select("*")
+        .eq("status", true)
+        .order("id", {
+          ascending: true,
+        });
 
     if (error) {
 
@@ -46,6 +53,7 @@ export default function ProdukPage() {
       setProducts(data || []);
 
     }
+
   };
 
   // =========================
@@ -62,7 +70,20 @@ export default function ProdukPage() {
 
     }
 
+    // =========================
+    // HITUNG BONUS SPONSOR
+    // =========================
+    const sponsorBonus =
+      Math.floor(
+        Number(product.profit || 0) *
+        Number(
+          product.bonus_referral || 0
+        ) / 100
+      );
+
+    // =========================
     // SIMPAN TRANSAKSI
+    // =========================
     const { error: trxError } =
       await supabase
         .from("transactions")
@@ -70,21 +91,20 @@ export default function ProdukPage() {
           {
             member_id: member.id,
 
-            product_name: product.name,
+            product_name:
+              product.name,
 
-            category: product.category,
+            category:
+              product.category,
 
-            amount: product.price,
+            amount:
+              product.harga_jual,
 
-            profit: product.profit,
+            profit:
+              product.profit,
 
             sponsor_bonus:
-              Math.floor(
-                Number(product.profit || 0) *
-                Number(
-                  product.referral_bonus_percent || 0
-                ) / 100
-              ),
+              sponsorBonus,
 
             status: "success",
           },
@@ -93,14 +113,16 @@ export default function ProdukPage() {
     // ERROR TRANSAKSI
     if (trxError) {
 
-      alert("Transaksi gagal");
       console.log(trxError);
 
+      alert("Transaksi gagal");
+
       return;
+
     }
 
     // =========================
-    // BONUS SPONSOR
+    // BONUS SPONSOR TRANSAKSI
     // =========================
     if (member.sponsor_code) {
 
@@ -117,23 +139,18 @@ export default function ProdukPage() {
       // JIKA ADA SPONSOR
       if (sponsor) {
 
-        const sponsorBonus =
-          Math.floor(
-            Number(product.profit || 0) *
-            Number(
-              product.referral_bonus_percent || 0
-            ) / 100
-          );
-
         await supabase
           .from("members")
           .update({
             saldo:
-              Number(sponsor.saldo || 0) +
-              sponsorBonus,
+              Number(
+                sponsor.saldo || 0
+              ) + sponsorBonus,
           })
           .eq("id", sponsor.id);
+
       }
+
     }
 
     // =========================
@@ -163,10 +180,19 @@ export default function ProdukPage() {
             .from("members")
             .update({
               saldo:
-                Number(sponsor.saldo || 0) + 1000,
+                Number(
+                  sponsor.saldo || 0
+                ) + 1000,
+
+              total_referral:
+                Number(
+                  sponsor.total_referral || 0
+                ) + 1,
             })
             .eq("id", sponsor.id);
+
         }
+
       }
 
       // UPDATE STATUS MEMBER
@@ -176,16 +202,23 @@ export default function ProdukPage() {
           status: "active",
         })
         .eq("id", member.id);
+
     }
 
     alert("Transaksi berhasil");
 
     window.location.href = "/";
+
   };
 
+  // =========================
+  // UI
+  // =========================
   return (
+
     <main className="min-h-screen bg-black text-white p-6">
 
+      {/* TITLE */}
       <h1 className="text-4xl font-bold text-cyan-400 mb-10">
         Produk Digital
       </h1>
@@ -207,18 +240,24 @@ export default function ProdukPage() {
 
             <span
               className={`px-4 py-2 rounded-xl font-bold ${
-                member.status === "active"
+                member.status ===
+                "active"
                   ? "bg-green-500 text-white"
-                  : member.status === "pending"
+                  : member.status ===
+                    "pending"
                   ? "bg-yellow-500 text-black"
                   : "bg-zinc-700 text-white"
               }`}
             >
-              {member.status === "active"
+
+              {member.status ===
+              "active"
                 ? "ACTIVE"
-                : member.status === "pending"
+                : member.status ===
+                  "pending"
                 ? "PENDING"
                 : "FREE"}
+
             </span>
 
           </div>
@@ -249,6 +288,7 @@ export default function ProdukPage() {
               className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
             >
 
+              {/* HEADER */}
               <div className="flex items-start justify-between gap-4">
 
                 <div>
@@ -263,6 +303,7 @@ export default function ProdukPage() {
 
                 </div>
 
+                {/* LABEL AKTIVASI */}
                 {product.is_activation && (
 
                   <div className="bg-yellow-500 text-black px-3 py-1 rounded-xl text-sm font-bold">
@@ -273,6 +314,7 @@ export default function ProdukPage() {
 
               </div>
 
+              {/* HARGA */}
               <div className="mt-6">
 
                 <p className="text-zinc-400">
@@ -280,11 +322,17 @@ export default function ProdukPage() {
                 </p>
 
                 <h3 className="text-4xl font-bold text-green-400 mt-2">
-                  Rp {Number(product.price || 0).toLocaleString()}
+
+                  Rp{" "}
+                  {Number(
+                    product.harga_jual || 0
+                  ).toLocaleString()}
+
                 </h3>
 
               </div>
 
+              {/* BONUS */}
               <div className="grid grid-cols-2 gap-4 mt-6">
 
                 <div className="bg-black rounded-2xl p-4">
@@ -294,7 +342,12 @@ export default function ProdukPage() {
                   </p>
 
                   <p className="text-cyan-400 text-2xl font-bold mt-2">
-                    Rp {Number(product.profit || 0).toLocaleString()}
+
+                    Rp{" "}
+                    {Number(
+                      product.profit || 0
+                    ).toLocaleString()}
+
                   </p>
 
                 </div>
@@ -306,13 +359,16 @@ export default function ProdukPage() {
                   </p>
 
                   <p className="text-green-400 text-2xl font-bold mt-2">
-                    {product.referral_bonus_percent || 0}%
+
+                    {product.bonus_referral || 0}%
+
                   </p>
 
                 </div>
 
               </div>
 
+              {/* BUTTON */}
               <button
                 onClick={() =>
                   handleBuyProduct(product)
@@ -331,5 +387,7 @@ export default function ProdukPage() {
       </div>
 
     </main>
+
   );
+
 }
