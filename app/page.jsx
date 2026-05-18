@@ -499,54 +499,50 @@ if (member) {
     Status Member
   </p>
 
-  <div className="flex items-center gap-3 mt-2">
+  <div className="flex items-center gap-3 mt-4">
 
-    <span
-      className={`px-4 py-2 rounded-xl font-bold ${
-        member.status === "active"
-          ? "bg-green-500 text-white"
-          : "bg-yellow-500 text-black"
-      }`}
-    >
-      <span
-  className={`px-4 py-2 rounded-xl font-bold ${
-    member.status === "active"
-      ? "bg-green-500 text-white"
-      : member.status === "pending"
-      ? "bg-yellow-500 text-black"
-      : "bg-zinc-700 text-white"
-  }`}
->
-  {member.status === "active"
-    ? "AKTIF"
-    : member.status === "pending"
-    ? "PENDING"
-    : "FREE"}
-</span>
-
-{/* TOMBOL AKTIVASI */}
-{member.status !== "active" &&
- member.status !== "pending" && (
-  <button
-    onClick={async () => {
-
-      await supabase
-        .from("members")
-        .update({
-          status: "pending",
-        })
-        .eq("id", member.id);
-
-      alert("Request aktivasi dikirim");
-
-      window.location.reload();
-
-    }}
-    className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
+  {/* STATUS */}
+  <span
+    className={`px-4 py-2 rounded-xl font-bold ${
+      member.status === "active"
+        ? "bg-green-500 text-white"
+        : member.status === "pending"
+        ? "bg-yellow-500 text-black"
+        : "bg-zinc-700 text-white"
+    }`}
   >
-    Aktivasi Sekarang
-  </button>
-)}
+    {member.status === "active"
+      ? "AKTIF"
+      : member.status === "pending"
+      ? "PENDING"
+      : "FREE"}
+  </span>
+
+  {/* TOMBOL AKTIVASI */}
+  {member.status !== "active" &&
+   member.status !== "pending" && (
+    <button
+      onClick={async () => {
+
+        await supabase
+          .from("members")
+          .update({
+            status: "pending",
+          })
+          .eq("id", member.id);
+
+        alert("Request aktivasi dikirim");
+
+        window.location.reload();
+
+      }}
+      className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
+    >
+      Aktivasi Sekarang
+    </button>
+  )}
+
+</div>
 
 {member.status === "pending" && (
   <div className="bg-yellow-500 text-black px-5 py-2 rounded-xl font-bold">
