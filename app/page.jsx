@@ -513,16 +513,34 @@ if (member) {
         : "FREE"}
     </span>
 
-    {member.status !== "active" && (
-      <button
-        onClick={() => {
-          window.location.href = "/produk";
-        }}
-        className="bg-cyan-400 text-black px-5 py-2 rounded-xl font-bold"
-      >
-        Aktivasi Sekarang
-      </button>
-    )}
+    {member.status === "free" && (
+  <button
+    onClick={async () => {
+
+      await supabase
+        .from("members")
+        .update({
+          status: "pending",
+        })
+        .eq("id", member.id);
+
+      alert(
+        "Request aktivasi berhasil dikirim, tunggu approve admin"
+      );
+
+      window.location.reload();
+    }}
+    className="bg-cyan-400 text-black px-5 py-2 rounded-xl font-bold"
+  >
+    Aktivasi Sekarang
+  </button>
+)}
+
+{member.status === "pending" && (
+  <div className="bg-yellow-500 text-black px-5 py-2 rounded-xl font-bold">
+    Menunggu Approve Admin
+  </div>
+)}
 
   </div>
 
