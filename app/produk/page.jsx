@@ -361,46 +361,6 @@ export default function ProdukPage() {
 
               </div>
 
-              {/* INFO */}
-              <div className="grid grid-cols-2 gap-4 mt-6">
-
-                <div className="bg-black rounded-2xl p-4">
-
-                  <p className="text-zinc-400 text-xs md:text-sm">
-
-                    Profit
-
-                  </p>
-
-                  <p className="text-cyan-400 text-lg md:text-2xl font-bold mt-2 break-words">
-
-                    Rp{" "}
-                    {Number(
-                      product.profit || 0
-                    ).toLocaleString()}
-
-                  </p>
-
-                </div>
-
-                <div className="bg-black rounded-2xl p-4">
-
-                  <p className="text-zinc-400 text-xs md:text-sm">
-
-                    Bonus Referral
-
-                  </p>
-
-                  <p className="text-green-400 text-lg md:text-2xl font-bold mt-2">
-
-                    {product.referral_bonus_percent || 0}%
-
-                  </p>
-
-                </div>
-
-              </div>
-
               {/* BUTTON */}
               <button
                 disabled={
@@ -413,7 +373,7 @@ export default function ProdukPage() {
                 }
                 className="
                   w-full
-                  mt-8
+                  mt-6
                   bg-cyan-400
                   text-black
                   py-4
