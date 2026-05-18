@@ -1,3 +1,6 @@
+<h1 className="text-5xl text-red-500">
+  REGISTER BARU TEST
+</h1>
 "use client";
 
 import { useState } from "react";
