@@ -5,110 +5,153 @@ import { supabase } from "../../lib/supabase";
 
 export default function AdminPage() {
 
+  // =========================
+  // STATE
+  // =========================
   const [members, setMembers] = useState([]);
   const [withdraws, setWithdraws] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
-const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
 
+  // =========================
+  // CHECK LOGIN ADMIN
+  // =========================
   useEffect(() => {
-    const adminLogin =
-  localStorage.getItem("admin");
 
-if (adminLogin === "true") {
-  setIsAdmin(true);
-}
+    const adminLogin =
+      localStorage.getItem("admin");
+
+    if (adminLogin === "true") {
+      setIsAdmin(true);
+    }
+
     getMembers();
+
   }, []);
 
+  // =========================
+  // GET MEMBERS
+  // =========================
   const getMembers = async () => {
 
+    // GET MEMBERS
     const { data } = await supabase
       .from("members")
-.select("*")
-.order("saldo", { ascending: false });
+      .select("*")
+      .order("saldo", {
+        ascending: false,
+      });
 
     if (data) {
       setMembers(data);
-const { data: withdrawData } = await supabase
-  .from("withdraws")
-  .select("*")
-  .order("id", { ascending: false });
-
-setWithdraws(withdrawData || []);
-      
     }
+
+    // GET WITHDRAWS
+    const { data: withdrawData } =
+      await supabase
+        .from("withdraws")
+        .select("*")
+        .order("id", {
+          ascending: false,
+        });
+
+    setWithdraws(withdrawData || []);
+
   };
 
+  // =========================
+  // LOGIN ADMIN
+  // =========================
   if (!isAdmin) {
+
+    return (
+
+      <main className="min-h-screen bg-black text-white flex items-center justify-center p-6">
+
+        <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-8 w-full max-w-md">
+
+          <h1 className="text-4xl font-bold text-cyan-400 mb-6">
+            Admin Login
+          </h1>
+
+          <input
+            type="password"
+            placeholder="Password Admin"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+            className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+          />
+
+          <button
+            onClick={() => {
+
+              if (
+                password === "admin123"
+              ) {
+
+                localStorage.setItem(
+                  "admin",
+                  "true"
+                );
+
+                setIsAdmin(true);
+
+              } else {
+
+                alert(
+                  "Password salah"
+                );
+
+              }
+
+            }}
+            className="w-full mt-5 bg-cyan-400 text-black py-3 rounded-2xl font-bold"
+          >
+            Login Admin
+          </button>
+
+        </div>
+
+      </main>
+
+    );
+
+  }
+
+  // =========================
+  // DASHBOARD ADMIN
+  // =========================
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center p-6">
 
-      <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-8 w-full max-w-md">
-
-        <h1 className="text-4xl font-bold text-cyan-400 mb-6">
-          Admin Login
-        </h1>
-
-        <input
-          type="password"
-          placeholder="Password Admin"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-        />
-
-        <button
-  onClick={() => {
-
-    if (password === "admin123") {
-
-      localStorage.setItem("admin", "true");
-
-      setIsAdmin(true);
-
-    } else {
-
-      alert("Password salah");
-
-    }
-
-  }}
-  className="w-full mt-5 bg-cyan-400 text-black py-3 rounded-2xl font-bold"
->
-  Login Admin
-</button>
-    
-
-      </div>
-
-    </main>
-  );
-}
-
-  return (
     <main className="min-h-screen bg-black text-white p-6">
 
+      {/* HEADER */}
       <h1 className="text-5xl font-bold text-cyan-400">
         Admin Dashboard
       </h1>
 
       <p className="text-zinc-400 mt-3 mb-10">
-        Total Member: {members.length}
+        Total Member:
+        {" "}
+        {members.length}
       </p>
 
+      {/* MEMBER LIST */}
       <div className="grid gap-5">
 
         {members.map((member, index) => (
-      
-      
 
           <div
             key={member.id}
             className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
           >
-<p className="text-cyan-400 font-bold mb-3">
-  #{index + 1}
-</p>
+
+            <p className="text-cyan-400 font-bold mb-3">
+              #{index + 1}
+            </p>
+
             <h2 className="text-3xl font-bold">
               {member.name}
             </h2>
@@ -122,199 +165,297 @@ setWithdraws(withdrawData || []);
               {" "}
               {member.referral_code}
             </p>
-            
-<div className="mt-5 space-y-2">
 
-  <p className="text-green-400 font-bold">
-    Saldo:
-    {" "}
-    Rp {Number(member.saldo || 0).toLocaleString()}
-  </p>
+            <div className="mt-5 space-y-2">
 
-  <p className="text-cyan-400">
-    Total Referral:
-    {" "}
-    {member.total_referral || 0}
-  </p>
+              {/* SALDO */}
+              <p className="text-green-400 font-bold">
 
-  <p
-    className={`font-bold ${
-      member.status === "active"
-        ? "text-green-400"
-        : "text-yellow-400"
-    }`}
-  >
-    Status:
-    {" "}
-    {member.status !== "active"
-      ? "AKTIF"
-      : "FREE"}
-  </p>
-  {member.status === "active" && (
-  <button
-    onClick={async () => {
+                Saldo:
+                {" "}
+                Rp{" "}
+                {Number(
+                  member.saldo || 0
+                ).toLocaleString()}
 
-      await supabase
-        .from("members")
-        .update({
-          status: "active",
-        })
-        .eq("id", member.id);
+              </p>
 
-      // BONUS SPONSOR
-      if (member.sponsor_code) {
+              {/* TOTAL REFERRAL */}
+              <p className="text-cyan-400">
 
-        const { data: sponsor } =
-          await supabase
-            .from("members")
-            .select("*")
-            .eq(
-              "referral_code",
-              member.sponsor_code
-            )
-            .single();
+                Total Referral:
+                {" "}
+                {member.total_referral || 0}
 
-        if (sponsor) {
+              </p>
 
-          await supabase
-            .from("members")
-            .update({
-              saldo:
-                Number(sponsor.saldo || 0) + 1000,
+              {/* STATUS */}
+              <p
+                className={`font-bold ${
+                  member.status === "active"
+                    ? "text-green-400"
+                    : member.status === "pending"
+                    ? "text-yellow-400"
+                    : "text-zinc-400"
+                }`}
+              >
 
-              total_referral:
-                Number(
-                  sponsor.total_referral || 0
-                ) + 1,
-            })
-            .eq("id", sponsor.id);
-        }
-      }
+                Status:
+                {" "}
 
-      alert("Member berhasil diaktivasi");
+                {member.status === "active"
+                  ? "AKTIF"
+                  : member.status ===
+                    "pending"
+                  ? "PENDING"
+                  : "FREE"}
 
-      getMembers();
+              </p>
 
-    }}
-    className="mt-5 bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
-  >
-    Aktivasi Member
-  </button>
-)}
+              {/* BUTTON AKTIVASI */}
+              {member.status ===
+                "pending" && (
 
-</div>
+                <button
+                  onClick={async () => {
+
+                    // AKTIFKAN MEMBER
+                    await supabase
+                      .from("members")
+                      .update({
+                        status: "active",
+                      })
+                      .eq(
+                        "id",
+                        member.id
+                      );
+
+                    // BONUS SPONSOR
+                    if (
+                      member.sponsor_code
+                    ) {
+
+                      const {
+                        data: sponsor,
+                      } =
+                        await supabase
+                          .from(
+                            "members"
+                          )
+                          .select("*")
+                          .eq(
+                            "referral_code",
+                            member.sponsor_code
+                          )
+                          .single();
+
+                      if (sponsor) {
+
+                        await supabase
+                          .from(
+                            "members"
+                          )
+                          .update({
+                            saldo:
+                              Number(
+                                sponsor.saldo ||
+                                  0
+                              ) + 1000,
+
+                            total_referral:
+                              Number(
+                                sponsor.total_referral ||
+                                  0
+                              ) + 1,
+                          })
+                          .eq(
+                            "id",
+                            sponsor.id
+                          );
+
+                      }
+
+                    }
+
+                    alert(
+                      "Member berhasil diaktivasi"
+                    );
+
+                    getMembers();
+
+                  }}
+                  className="mt-5 bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
+                >
+                  Aktivasi Member
+                </button>
+
+              )}
+
+            </div>
+
           </div>
 
         ))}
 
       </div>
 
+      {/* WITHDRAW */}
       <div className="mt-10">
 
-  <h2 className="text-3xl font-bold mb-6">
-    Withdraw Request
-  </h2>
-        
-        <div className="space-y-5 mt-6">
+        <h2 className="text-3xl font-bold mb-6">
+          Withdraw Request
+        </h2>
 
-  {withdraws.map((item) => (
+        <div className="space-y-5">
 
-    <div
-      key={item.id}
-      className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
-    >
+          {withdraws.map((item) => (
 
-      <h3 className="text-2xl font-bold">
-        {item.name}
-      </h3>
+            <div
+              key={item.id}
+              className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
+            >
 
-      <p className="text-zinc-400 mt-2">
-        {item.whatsapp}
-      </p>
+              <h3 className="text-2xl font-bold">
+                {item.name}
+              </h3>
 
-      <p className="text-green-400 text-2xl font-bold mt-4">
-        Rp {Number(item.amount).toLocaleString()}
-      </p>
+              <p className="text-zinc-400 mt-2">
+                {item.whatsapp}
+              </p>
 
-      <p className="text-yellow-400 mt-3">
-        Status: {item.status}
-      </p>
+              <p className="text-green-400 text-2xl font-bold mt-4">
 
-      <div className="flex gap-3 mt-5">
+                Rp{" "}
+                {Number(
+                  item.amount
+                ).toLocaleString()}
 
-  {/* APPROVE WITHDRAW */}
-  <button
-    onClick={async () => {
+              </p>
 
-      await supabase
-        .from("withdraws")
-        .update({
-          status: "success",
-        })
-        .eq("id", item.id);
+              <p className="text-yellow-400 mt-3">
 
-      getMembers();
+                Status:
+                {" "}
+                {item.status}
 
-    }}
-    className="bg-green-500 px-5 py-3 rounded-2xl font-bold"
-  >
-    Selesaikan
-  </button>
+              </p>
 
-  {/* REJECT WITHDRAW */}
-  <button
-    onClick={async () => {
+              <div className="flex gap-3 mt-5">
 
-      // CARI MEMBER
-      const memberData = members.find(
-        (m) => m.whatsapp === item.whatsapp
-      );
+                {/* APPROVE */}
+                <button
+                  onClick={async () => {
 
-      // KEMBALIKAN SALDO
-      if (memberData) {
+                    await supabase
+                      .from(
+                        "withdraws"
+                      )
+                      .update({
+                        status:
+                          "success",
+                      })
+                      .eq(
+                        "id",
+                        item.id
+                      );
 
-        const newSaldo =
-          Number(memberData.saldo || 0) +
-          Number(item.amount || 0);
+                    getMembers();
 
-        await supabase
-          .from("members")
-          .update({
-            saldo: newSaldo,
-          })
-          .eq("id", memberData.id);
-      }
+                  }}
+                  className="bg-green-500 px-5 py-3 rounded-2xl font-bold"
+                >
+                  Selesaikan
+                </button>
 
-      // UPDATE STATUS
-      await supabase
-        .from("withdraws")
-        .update({
-          status: "rejected",
-        })
-        .eq("id", item.id);
+                {/* REJECT */}
+                <button
+                  onClick={async () => {
 
-      getMembers();
+                    const memberData =
+                      members.find(
+                        (m) =>
+                          m.whatsapp ===
+                          item.whatsapp
+                      );
 
-    }}
-    className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
-  >
-    Tolak
-  </button>
+                    // KEMBALIKAN SALDO
+                    if (memberData) {
 
-</div>
+                      const newSaldo =
+                        Number(
+                          memberData.saldo ||
+                            0
+                        ) +
+                        Number(
+                          item.amount ||
+                            0
+                        );
 
-      
+                      await supabase
+                        .from(
+                          "members"
+                        )
+                        .update({
+                          saldo:
+                            newSaldo,
+                        })
+                        .eq(
+                          "id",
+                          memberData.id
+                        );
 
-    
+                    }
 
-    </div>
+                    // UPDATE STATUS
+                    await supabase
+                      .from(
+                        "withdraws"
+                      )
+                      .update({
+                        status:
+                          "rejected",
+                      })
+                      .eq(
+                        "id",
+                        item.id
+                      );
 
-  ))}
+                    getMembers();
 
-</div>
+                  }}
+                  className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
+                >
+                  Tolak
+                </button>
+
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
+
       </div>
 
+      {/* LOGOUT */}
+      <button
+        onClick={() => {
+
+          localStorage.removeItem(
+            "admin"
+          );
+
+          window.location.reload();
+
+        }}
+        className="mt-10 bg-red-500 px-6 py-3 rounded-2xl font-bold"
+      >
+        Logout Admin
+      </button>
 
     </main>
+
   );
+
 }
