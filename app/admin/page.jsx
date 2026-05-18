@@ -146,7 +146,7 @@ setWithdraws(withdrawData || []);
   >
     Status:
     {" "}
-    {member.status === "active"
+    {member.status !== "active"
       ? "AKTIF"
       : "FREE"}
   </p>
