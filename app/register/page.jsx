@@ -1,30 +1,41 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 export default function RegisterPage() {
 
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [name, setName] =
-    useState("");
+  const [name, setName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [alamat, setAlamat] = useState("");
+  const [kota, setKota] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [whatsapp, setWhatsapp] =
-    useState("");
-
-  const [alamat, setAlamat] =
-    useState("");
-
-  const [kota, setKota] =
-    useState("");
-
-  const [password, setPassword] =
+  const [sponsorCode, setSponsorCode] =
     useState("");
 
   const [loading, setLoading] =
     useState(false);
+
+  // =========================
+  // GET REFERRAL CODE
+  // =========================
+  useEffect(() => {
+
+    const ref =
+      searchParams.get("ref");
+
+    if (ref) {
+
+      setSponsorCode(ref);
+
+    }
+
+  }, [searchParams]);
 
   // =========================
   // REGISTER
@@ -79,16 +90,43 @@ export default function RegisterPage() {
       }
 
       // =========================
-      // GENERATE MEMBER ID
+      // GENERATE REFERRAL CODE
       // =========================
       const randomNumber =
         Math.floor(
-          1000 +
-          Math.random() * 9000
+          100000 +
+          Math.random() * 900000
         );
 
-      const memberCode =
+      const referralCode =
         `DAN${randomNumber}`;
+
+      // =========================
+      // FIND SPONSOR
+      // =========================
+      let referrerId = null;
+
+      if (sponsorCode) {
+
+        const {
+          data: sponsor,
+        } = await supabase
+          .from("members")
+          .select("id")
+          .eq(
+            "referral_code",
+            sponsorCode
+          )
+          .maybeSingle();
+
+        if (sponsor) {
+
+          referrerId =
+            sponsor.id;
+
+        }
+
+      }
 
       // =========================
       // INSERT MEMBER
@@ -105,8 +143,16 @@ export default function RegisterPage() {
             alamat,
             kota,
             password,
-            member_code:
-              memberCode,
+
+            referral_code:
+              referralCode,
+
+            sponsor_code:
+              sponsorCode || null,
+
+            referrer_id:
+              referrerId,
+
             status:
               "pending",
           },
@@ -176,29 +222,63 @@ export default function RegisterPage() {
         {/* HEADER */}
         <div className="mb-8">
 
-          <h1
+          <div
             className="
-              text-4xl
-              md:text-5xl
-              font-bold
-              text-cyan-400
+              flex
+              items-center
+              gap-4
+              mb-6
             "
           >
 
-            Registrasi Member
+            <div
+              className="
+                w-16
+                h-16
+                rounded-2xl
+                bg-cyan-400
+                text-black
+                flex
+                items-center
+                justify-center
+                text-2xl
+                font-black
+              "
+            >
 
-          </h1>
+              DAN
 
-          <p
-            className="
-              text-zinc-400
-              mt-3
-            "
-          >
+            </div>
 
-            Daftar menjadi member DAN Digital Network
+            <div>
 
-          </p>
+              <h1
+                className="
+                  text-4xl
+                  md:text-5xl
+                  font-bold
+                  text-cyan-400
+                "
+              >
+
+                Registrasi Member
+
+              </h1>
+
+              <p
+                className="
+                  text-zinc-400
+                  mt-2
+                "
+              >
+
+                Affiliate Digital Modern
+
+              </p>
+
+            </div>
+
+          </div>
 
         </div>
 
@@ -402,6 +482,111 @@ export default function RegisterPage() {
                 focus:border-cyan-400
               "
             />
+
+          </div>
+
+          {/* SPONSOR */}
+          <div>
+
+            <label
+              className="
+                block
+                mb-2
+                text-sm
+                text-zinc-400
+              "
+            >
+
+              Kode Referral
+
+            </label>
+
+            <input
+              type="text"
+              value={sponsorCode}
+              readOnly
+              placeholder="Kode referral otomatis"
+              className="
+                w-full
+                bg-zinc-800
+                border
+                border-cyan-500/20
+                rounded-2xl
+                p-4
+                text-cyan-400
+                font-bold
+                outline-none
+              "
+            />
+
+          </div>
+
+          {/* INFO BONUS */}
+          <div
+            className="
+              bg-black
+              border
+              border-cyan-500/20
+              rounded-2xl
+              p-5
+            "
+          >
+
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                gap-4
+                flex-wrap
+              "
+            >
+
+              <div>
+
+                <p
+                  className="
+                    text-cyan-400
+                    font-bold
+                  "
+                >
+
+                  Bonus Sponsor
+
+                </p>
+
+                <p
+                  className="
+                    text-zinc-400
+                    text-sm
+                    mt-1
+                  "
+                >
+
+                  Diberikan sekali saat referral aktivasi
+
+                </p>
+
+              </div>
+
+              <div
+                className="
+                  bg-green-500/10
+                  border
+                  border-green-500/20
+                  text-green-400
+                  px-4
+                  py-2
+                  rounded-xl
+                  font-bold
+                "
+              >
+
+                BONUS SEKALI
+
+              </div>
+
+            </div>
 
           </div>
 
