@@ -11,15 +11,17 @@ export default function ProdukPage() {
   const [products, setProducts] =
     useState([]);
 
+  const [loading, setLoading] =
+    useState(true);
+
   // =========================
-  // GET DATA
+  // GET MEMBER & PRODUCTS
   // =========================
   useEffect(() => {
 
-    const localMember =
-      JSON.parse(
-        localStorage.getItem("member")
-      );
+    const localMember = JSON.parse(
+      localStorage.getItem("member")
+    );
 
     if (localMember) {
       setMember(localMember);
@@ -33,6 +35,8 @@ export default function ProdukPage() {
   // GET PRODUCTS
   // =========================
   const getProducts = async () => {
+
+    setLoading(true);
 
     const { data, error } =
       await supabase
@@ -53,6 +57,8 @@ export default function ProdukPage() {
 
     }
 
+    setLoading(false);
+
   };
 
   // =========================
@@ -64,20 +70,14 @@ export default function ProdukPage() {
       if (!member) {
 
         alert("Silakan login");
+
         return;
 
       }
 
-      // BONUS SPONSOR
-      const sponsorBonus =
-        Math.floor(
-          Number(product.profit || 0) *
-          Number(
-            product.referral_bonus_percent || 0
-          ) / 100
-        );
-
-      // SIMPAN TRANSAKSI
+      // =========================
+      // INSERT TRANSACTION
+      // =========================
       const { error } =
         await supabase
           .from("transactions")
@@ -86,6 +86,12 @@ export default function ProdukPage() {
               member_id:
                 member.id,
 
+              member_name:
+                member.name,
+
+              whatsapp:
+                member.whatsapp,
+
               product_name:
                 product.name,
 
@@ -93,20 +99,23 @@ export default function ProdukPage() {
                 product.category,
 
               amount:
-                Number(
-                  product.sell_price || 0
-                ),
+                product.price,
 
               profit:
-                Number(
-                  product.profit || 0
-                ),
+                product.profit,
 
               sponsor_bonus:
-                sponsorBonus,
+                Math.floor(
+                  Number(
+                    product.profit || 0
+                  ) *
+                  Number(
+                    product.referral_bonus_percent || 0
+                  ) / 100
+                ),
 
               status:
-                "success",
+                "pending",
             },
           ]);
 
@@ -114,112 +123,31 @@ export default function ProdukPage() {
 
         console.log(error);
 
-        alert("Transaksi gagal");
+        alert("Order gagal");
 
         return;
 
       }
 
       // =========================
-      // BONUS REFERRAL
+      // PRODUK AKTIVASI
       // =========================
       if (
-        member.sponsor_code
+        product.is_activation &&
+        member.status !== "active"
       ) {
 
-        const { data: sponsor } =
-          await supabase
-            .from("members")
-            .select("*")
-            .eq(
-              "referral_code",
-              member.sponsor_code
-            )
-            .single();
-
-        if (sponsor) {
-
-          await supabase
-            .from("members")
-            .update({
-              saldo:
-                Number(
-                  sponsor.saldo || 0
-                ) + sponsorBonus,
-            })
-            .eq(
-              "id",
-              sponsor.id
-            );
-
-        }
-
-      }
-
-      // =========================
-      // AKTIVASI MEMBER
-      // =========================
-      if (
-        product.is_activation
-      ) {
-
-        // BONUS SPONSOR SEKALI
-        if (
-          member.status !== "active" &&
-          member.sponsor_code
-        ) {
-
-          const {
-            data: sponsor,
-          } = await supabase
-            .from("members")
-            .select("*")
-            .eq(
-              "referral_code",
-              member.sponsor_code
-            )
-            .single();
-
-          if (sponsor) {
-
-            await supabase
-              .from("members")
-              .update({
-                saldo:
-                  Number(
-                    sponsor.saldo || 0
-                  ) + 1000,
-
-                total_referral:
-                  Number(
-                    sponsor.total_referral || 0
-                  ) + 1,
-              })
-              .eq(
-                "id",
-                sponsor.id
-              );
-
-          }
-
-        }
-
-        // UPDATE MEMBER
         await supabase
           .from("members")
           .update({
-            status:
-              "active",
+            status: "active",
           })
-          .eq(
-            "id",
-            member.id
-          );
+          .eq("id", member.id);
 
       }
 
       alert(
-        "Transaksi berhasil"
+        "Order berhasil masuk"
       );
 
       window.location.reload();
@@ -230,11 +158,20 @@ export default function ProdukPage() {
 
     <main className="min-h-screen bg-black text-white p-6">
 
-      <h1 className="text-5xl font-bold text-cyan-400 mb-10">
-        Produk Digital
-      </h1>
+      {/* HEADER */}
+      <div className="mb-10">
 
-      {/* MEMBER */}
+        <h1 className="text-5xl font-bold text-cyan-400">
+          Produk Digital
+        </h1>
+
+        <p className="text-zinc-400 mt-3">
+          Paket Data, Pulsa, PPOB
+        </p>
+
+      </div>
+
+      {/* MEMBER INFO */}
       {member && (
 
         <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6 mb-8">
@@ -273,118 +210,141 @@ export default function ProdukPage() {
 
       )}
 
+      {/* LOADING */}
+      {loading && (
+
+        <div className="bg-zinc-900 rounded-3xl p-6">
+
+          <p className="text-zinc-400">
+            Memuat produk...
+          </p>
+
+        </div>
+
+      )}
+
+      {/* EMPTY */}
+      {!loading &&
+        products.length === 0 && (
+
+        <div className="bg-zinc-900 rounded-3xl p-6">
+
+          <p className="text-zinc-400">
+            Produk belum tersedia
+          </p>
+
+        </div>
+
+      )}
+
       {/* PRODUCTS */}
       <div className="grid gap-5">
 
-        {products.length === 0 ? (
+        {products.map((product) => (
 
-          <div className="bg-zinc-900 rounded-3xl p-6">
+          <div
+            key={product.id}
+            className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
+          >
 
-            <p className="text-zinc-400">
-              Produk belum tersedia
-            </p>
+            {/* TOP */}
+            <div className="flex items-start justify-between gap-4">
 
-          </div>
+              <div>
 
-        ) : (
+                <h2 className="text-3xl font-bold text-cyan-400">
+                  {product.name}
+                </h2>
 
-          products.map((product) => (
-
-            <div
-              key={product.id}
-              className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6"
-            >
-
-              <div className="flex items-start justify-between gap-4">
-
-                <div>
-
-                  <h2 className="text-3xl font-bold text-cyan-400">
-                    {product.name}
-                  </h2>
-
-                  <p className="text-zinc-400 mt-2">
-                    {product.category}
-                  </p>
-
-                </div>
-
-                {product.is_activation && (
-
-                  <div className="bg-yellow-500 text-black px-3 py-1 rounded-xl text-sm font-bold">
-                    Aktivasi
-                  </div>
-
-                )}
-
-              </div>
-
-              <div className="mt-6">
-
-                <p className="text-zinc-400">
-                  Harga Produk
+                <p className="text-zinc-400 mt-2">
+                  {product.category}
                 </p>
 
-                <h3 className="text-4xl font-bold text-green-400 mt-2">
-
-                  Rp{" "}
-                  {Number(
-                    product.sell_price || 0
-                  ).toLocaleString()}
-
-                </h3>
-
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-6">
+              {product.is_activation && (
 
-                <div className="bg-black rounded-2xl p-4">
+                <div className="bg-yellow-500 text-black px-3 py-1 rounded-xl text-sm font-bold">
 
-                  <p className="text-zinc-400 text-sm">
-                    Profit
-                  </p>
-
-                  <p className="text-cyan-400 text-2xl font-bold mt-2">
-
-                    Rp{" "}
-                    {Number(
-                      product.profit || 0
-                    ).toLocaleString()}
-
-                  </p>
+                  AKTIVASI
 
                 </div>
 
-                <div className="bg-black rounded-2xl p-4">
-
-                  <p className="text-zinc-400 text-sm">
-                    Bonus Referral
-                  </p>
-
-                  <p className="text-green-400 text-2xl font-bold mt-2">
-
-                    {product.referral_bonus_percent || 0}%
-
-                  </p>
-
-                </div>
-
-              </div>
-
-              <button
-                onClick={() =>
-                  handleBuyProduct(product)
-                }
-                className="w-full mt-8 bg-cyan-400 text-black py-4 rounded-2xl font-bold"
-              >
-                Beli Produk
-              </button>
+              )}
 
             </div>
 
-          ))
+            {/* PRICE */}
+            <div className="mt-6">
 
-        )}
+              <p className="text-zinc-400">
+                Harga Produk
+              </p>
+
+              <h3 className="text-4xl font-bold text-green-400 mt-2">
+
+                Rp{" "}
+                {Number(
+                  product.price || 0
+                ).toLocaleString()}
+
+              </h3>
+
+            </div>
+
+            {/* INFO */}
+            <div className="grid grid-cols-2 gap-4 mt-6">
+
+              <div className="bg-black rounded-2xl p-4">
+
+                <p className="text-zinc-400 text-sm">
+                  Profit
+                </p>
+
+                <p className="text-cyan-400 text-2xl font-bold mt-2">
+
+                  Rp{" "}
+                  {Number(
+                    product.profit || 0
+                  ).toLocaleString()}
+
+                </p>
+
+              </div>
+
+              <div className="bg-black rounded-2xl p-4">
+
+                <p className="text-zinc-400 text-sm">
+                  Bonus Referral
+                </p>
+
+                <p className="text-green-400 text-2xl font-bold mt-2">
+
+                  {product.referral_bonus_percent || 0}%
+
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* BUTTON */}
+            <button
+              onClick={() =>
+                handleBuyProduct(
+                  product
+                )
+              }
+              className="w-full mt-8 bg-cyan-400 text-black py-4 rounded-2xl font-bold"
+            >
+
+              Beli Produk
+
+            </button>
+
+          </div>
+
+        ))}
 
       </div>
 
