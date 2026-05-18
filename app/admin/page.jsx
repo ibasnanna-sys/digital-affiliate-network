@@ -5,13 +5,10 @@ import { supabase } from "../../lib/supabase";
 
 export default function AdminPage() {
 
-  // =========================
+  // ======================
   // STATE
-  // =========================
+  // ======================
   const [members, setMembers] =
-    useState([]);
-
-  const [withdraws, setWithdraws] =
     useState([]);
 
   const [products, setProducts] =
@@ -20,17 +17,11 @@ export default function AdminPage() {
   const [transactions, setTransactions] =
     useState([]);
 
-  const [isAdmin, setIsAdmin] =
-    useState(false);
-
-  const [password, setPassword] =
-    useState("");
+  const [withdraws, setWithdraws] =
+    useState([]);
 
   const [menu, setMenu] =
     useState("dashboard");
-
-  const [search, setSearch] =
-    useState("");
 
   // FORM PRODUK
   const [name, setName] =
@@ -50,25 +41,15 @@ export default function AdminPage() {
     setReferralBonus,
   ] = useState("");
 
-  // =========================
-  // CHECK LOGIN
-  // =========================
+  // ======================
+  // GET DATA
+  // ======================
   useEffect(() => {
-
-    const adminLogin =
-      localStorage.getItem("admin");
-
-    if (adminLogin === "true") {
-      setIsAdmin(true);
-    }
 
     getData();
 
   }, []);
 
-  // =========================
-  // GET DATA
-  // =========================
   const getData = async () => {
 
     // MEMBERS
@@ -81,17 +62,6 @@ export default function AdminPage() {
         });
 
     setMembers(memberData || []);
-
-    // WITHDRAW
-    const { data: withdrawData } =
-      await supabase
-        .from("withdraws")
-        .select("*")
-        .order("id", {
-          ascending: false,
-        });
-
-    setWithdraws(withdrawData || []);
 
     // PRODUCTS
     const { data: productData } =
@@ -115,651 +85,548 @@ export default function AdminPage() {
 
     setTransactions(trxData || []);
 
+    // WITHDRAW
+    const { data: wdData } =
+      await supabase
+        .from("withdraws")
+        .select("*")
+        .order("id", {
+          ascending: false,
+        });
+
+    setWithdraws(wdData || []);
+
   };
-
-  // =========================
-  // LOGIN
-  // =========================
-  if (!isAdmin) {
-
-    return (
-
-      <main className="min-h-screen bg-black text-white flex items-center justify-center p-6">
-
-        <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-8 w-full max-w-md">
-
-          <h1 className="text-4xl font-bold text-cyan-400 mb-6">
-            Admin Login
-          </h1>
-
-          <input
-            type="password"
-            placeholder="Password Admin"
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-          />
-
-          <button
-            onClick={() => {
-
-              if (
-                password === "admin123"
-              ) {
-
-                localStorage.setItem(
-                  "admin",
-                  "true"
-                );
-
-                setIsAdmin(true);
-
-              } else {
-
-                alert(
-                  "Password salah"
-                );
-
-              }
-
-            }}
-            className="w-full mt-5 bg-cyan-400 text-black py-3 rounded-2xl font-bold"
-          >
-            Login Admin
-          </button>
-
-        </div>
-
-      </main>
-
-    );
-
-  }
-
-  // =========================
-  // FILTER MEMBER
-  // =========================
-  const filteredMembers =
-    members.filter((member) => {
-
-      return (
-        member.name
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          ) ||
-
-        member.whatsapp
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          ) ||
-
-        member.referral_code
-          ?.toLowerCase()
-          .includes(
-            search.toLowerCase()
-          )
-      );
-
-    });
-
-  // =========================
-  // TOP MEMBER
-  // =========================
-  const topMembers =
-    [...members]
-      .sort(
-        (a, b) =>
-          Number(
-            b.total_referral || 0
-          ) -
-          Number(
-            a.total_referral || 0
-          )
-      )
-      .slice(0, 5);
 
   return (
 
-    <main className="min-h-screen bg-black text-white flex">
+    <main className="min-h-screen bg-black text-white p-5">
 
-      {/* SIDEBAR */}
-      <div className="w-[260px] bg-zinc-950 border-r border-cyan-500/20 p-6 hidden lg:block">
+      {/* HEADER */}
+      <div className="mb-10">
 
-        <h1 className="text-4xl font-bold text-cyan-400">
-          DAN
+        <h1 className="text-6xl font-bold text-cyan-400 leading-none">
+          Admin
+          <br />
+          Dashboard
         </h1>
 
-        <div className="mt-10 space-y-3">
-
-          {[
-            "dashboard",
-            "members",
-            "withdraw",
-            "add-product",
-            "products",
-            "orders",
-            "history",
-          ].map((item) => (
-
-            <button
-              key={item}
-              onClick={() =>
-                setMenu(item)
-              }
-              className={`w-full text-left px-5 py-3 rounded-2xl font-bold capitalize ${
-                menu === item
-                  ? "bg-cyan-400 text-black"
-                  : "bg-zinc-900 text-white"
-              }`}
-            >
-              {item.replace("-", " ")}
-            </button>
-
-          ))}
-
-          <button
-            onClick={() => {
-
-              localStorage.removeItem(
-                "admin"
-              );
-
-              window.location.reload();
-
-            }}
-            className="w-full bg-red-500 px-5 py-3 rounded-2xl font-bold mt-8"
-          >
-            Logout
-          </button>
-
-        </div>
+        <p className="text-zinc-400 mt-4 text-xl">
+          Digital Affiliate Network
+        </p>
 
       </div>
 
-      {/* CONTENT */}
-      <div className="flex-1 p-6">
+      {/* LAYOUT */}
+      <div className="grid grid-cols-12 gap-5">
 
-        {/* HEADER */}
-        <div className="flex items-center justify-between mb-8">
+        {/* SIDEBAR */}
+        <div className="col-span-4">
 
-          <div>
+          <div className="bg-zinc-900 rounded-3xl p-4 sticky top-4">
 
-            <h1 className="text-5xl font-bold text-cyan-400">
-              Admin Dashboard
-            </h1>
+            <div className="grid gap-3">
 
-            <p className="text-zinc-400 mt-3">
-              Digital Affiliate Network
-            </p>
-
-          </div>
-
-        </div>
-
-        {/* STATS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-
-          <div className="bg-zinc-900 rounded-3xl p-6">
-
-            <p className="text-zinc-400">
-              Total Member
-            </p>
-
-            <h2 className="text-4xl font-bold text-cyan-400 mt-4">
-              {members.length}
-            </h2>
-
-          </div>
-
-          <div className="bg-zinc-900 rounded-3xl p-6">
-
-            <p className="text-zinc-400">
-              Total Produk
-            </p>
-
-            <h2 className="text-4xl font-bold text-green-400 mt-4">
-              {products.length}
-            </h2>
-
-          </div>
-
-          <div className="bg-zinc-900 rounded-3xl p-6">
-
-            <p className="text-zinc-400">
-              Withdraw
-            </p>
-
-            <h2 className="text-4xl font-bold text-yellow-400 mt-4">
-              {withdraws.length}
-            </h2>
-
-          </div>
-
-          <div className="bg-zinc-900 rounded-3xl p-6">
-
-            <p className="text-zinc-400">
-              Transaksi
-            </p>
-
-            <h2 className="text-4xl font-bold text-cyan-400 mt-4">
-              {transactions.length}
-            </h2>
-
-          </div>
-
-        </div>
-
-        {/* TOP MEMBER */}
-        <div className="bg-zinc-900 rounded-3xl p-6 mb-8">
-
-          <h2 className="text-3xl font-bold text-cyan-400 mb-6">
-            Top 5 Member
-          </h2>
-
-          <div className="space-y-4">
-
-            {topMembers.map(
-              (member, index) => (
-
-              <div
-                key={member.id}
-                className="flex items-center justify-between bg-black rounded-2xl p-4"
+              <button
+                onClick={() =>
+                  setMenu("dashboard")
+                }
+                className={`p-4 rounded-2xl text-left font-bold ${
+                  menu === "dashboard"
+                    ? "bg-cyan-400 text-black"
+                    : "bg-black"
+                }`}
               >
+                Dashboard
+              </button>
 
-                <div>
+              <button
+                onClick={() =>
+                  setMenu("add-product")
+                }
+                className={`p-4 rounded-2xl text-left font-bold ${
+                  menu === "add-product"
+                    ? "bg-cyan-400 text-black"
+                    : "bg-black"
+                }`}
+              >
+                Tambah Produk
+              </button>
 
-                  <h3 className="text-xl font-bold">
-                    #{index + 1}
-                    {" "}
-                    {member.name}
-                  </h3>
+              <button
+                onClick={() =>
+                  setMenu("products")
+                }
+                className={`p-4 rounded-2xl text-left font-bold ${
+                  menu === "products"
+                    ? "bg-cyan-400 text-black"
+                    : "bg-black"
+                }`}
+              >
+                Atur Produk
+              </button>
 
-                  <p className="text-zinc-400 mt-1">
-                    Referral:
-                    {" "}
-                    {member.total_referral || 0}
+              <button
+                onClick={() =>
+                  setMenu("members")
+                }
+                className={`p-4 rounded-2xl text-left font-bold ${
+                  menu === "members"
+                    ? "bg-cyan-400 text-black"
+                    : "bg-black"
+                }`}
+              >
+                Daftar Member
+              </button>
+
+              <button
+                onClick={() =>
+                  setMenu("transactions")
+                }
+                className={`p-4 rounded-2xl text-left font-bold ${
+                  menu === "transactions"
+                    ? "bg-cyan-400 text-black"
+                    : "bg-black"
+                }`}
+              >
+                Histori Transaksi
+              </button>
+
+              <button
+                onClick={() =>
+                  setMenu("withdraw")
+                }
+                className={`p-4 rounded-2xl text-left font-bold ${
+                  menu === "withdraw"
+                    ? "bg-cyan-400 text-black"
+                    : "bg-black"
+                }`}
+              >
+                Withdraw
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* CONTENT */}
+        <div className="col-span-8">
+
+          {/* DASHBOARD */}
+          {menu === "dashboard" && (
+
+            <div>
+
+              {/* STATISTIK */}
+              <div className="grid grid-cols-2 gap-5">
+
+                <div className="bg-zinc-900 rounded-3xl p-6">
+
+                  <p className="text-zinc-400 text-2xl">
+                    Total Member
                   </p>
+
+                  <h2 className="text-6xl font-bold text-cyan-400 mt-5">
+                    {members.length}
+                  </h2>
 
                 </div>
 
-                <div className="text-right">
+                <div className="bg-zinc-900 rounded-3xl p-6">
 
-                  <p className="text-green-400 font-bold">
-                    Rp{" "}
-                    {Number(
-                      member.saldo || 0
-                    ).toLocaleString()}
+                  <p className="text-zinc-400 text-2xl">
+                    Total Produk
                   </p>
+
+                  <h2 className="text-6xl font-bold text-green-400 mt-5">
+                    {products.length}
+                  </h2>
+
+                </div>
+
+                <div className="bg-zinc-900 rounded-3xl p-6">
+
+                  <p className="text-zinc-400 text-2xl">
+                    Withdraw
+                  </p>
+
+                  <h2 className="text-6xl font-bold text-yellow-400 mt-5">
+                    {withdraws.length}
+                  </h2>
+
+                </div>
+
+                <div className="bg-zinc-900 rounded-3xl p-6">
+
+                  <p className="text-zinc-400 text-2xl">
+                    Transaksi
+                  </p>
+
+                  <h2 className="text-6xl font-bold text-cyan-400 mt-5">
+                    {transactions.length}
+                  </h2>
 
                 </div>
 
               </div>
 
-            ))}
+              {/* TOP MEMBER */}
+              <div className="bg-zinc-900 rounded-3xl p-6 mt-8">
 
-          </div>
+                <h2 className="text-5xl font-bold text-cyan-400 mb-8">
+                  Top 5 Member
+                </h2>
 
-        </div>
+                <div className="grid gap-5">
 
-        {/* MEMBERS */}
-        {menu === "members" && (
+                  {members
+                    .slice(0, 5)
+                    .map((member, index) => (
 
-          <div>
+                      <div
+                        key={member.id}
+                        className="bg-black rounded-3xl p-5 flex items-center justify-between"
+                      >
 
-            <div className="bg-zinc-900 rounded-3xl p-6 mb-6">
+                        <div>
 
-              <input
-                type="text"
-                placeholder="Cari member..."
-                value={search}
-                onChange={(e) =>
-                  setSearch(
-                    e.target.value
-                  )
-                }
-                className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-              />
+                          <h3 className="text-3xl font-bold">
+                            #{index + 1} {member.name}
+                          </h3>
 
-             {/* ADD PRODUCT */}
-{menu === "add-product" && (
+                          <p className="text-zinc-400 mt-2 text-xl">
+                            Referral:
+                            {" "}
+                            {member.total_referral || 0}
+                          </p>
 
-  <div className="bg-zinc-900 rounded-3xl p-6">
+                        </div>
 
-    <h2 className="text-3xl font-bold text-cyan-400 mb-6">
-      Tambah Produk
-    </h2>
+                        <div className="text-right">
 
-    <div className="grid gap-4">
+                          <p className="text-green-400 text-3xl font-bold">
 
-      <input
-        type="text"
-        placeholder="Nama Produk"
-        value={name}
-        onChange={(e) =>
-          setName(e.target.value)
-        }
-        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-      />
+                            Rp{" "}
+                            {Number(
+                              member.saldo || 0
+                            ).toLocaleString()}
 
-      <input
-        type="text"
-        placeholder="Kategori"
-        value={category}
-        onChange={(e) =>
-          setCategory(
-            e.target.value
-          )
-        }
-        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-      />
+                          </p>
 
-      <input
-        type="number"
-        placeholder="Harga Produk"
-        value={price}
-        onChange={(e) =>
-          setPrice(
-            e.target.value
-          )
-        }
-        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-      />
+                        </div>
 
-      <input
-        type="number"
-        placeholder="Profit"
-        value={profit}
-        onChange={(e) =>
-          setProfit(
-            e.target.value
-          )
-        }
-        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-      />
+                      </div>
 
-      <input
-        type="number"
-        placeholder="Bonus Referral (%)"
-        value={referralBonus}
-        onChange={(e) =>
-          setReferralBonus(
-            e.target.value
-          )
-        }
-        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
-      />
+                    ))}
 
-      <button
-        onClick={async () => {
+                </div>
 
-          if (
-            !name ||
-            !category ||
-            !price
-          ) {
-
-            alert(
-              "Lengkapi data produk"
-            );
-
-            return;
-
-          }
-
-          await supabase
-            .from("products")
-            .insert([
-              {
-                name,
-                category,
-
-                price:
-                  Number(price),
-
-                profit:
-                  Number(profit),
-
-                referral_bonus_percent:
-                  Number(
-                    referralBonus
-                  ),
-
-                status:
-                  "active",
-
-                is_activation:
-                  false,
-              },
-            ]);
-
-          alert(
-            "Produk berhasil ditambah"
-          );
-
-          setName("");
-          setCategory("");
-          setPrice("");
-          setProfit("");
-          setReferralBonus("");
-
-          getData();
-
-        }}
-        className="bg-cyan-400 text-black py-4 rounded-2xl font-bold"
-      >
-        Tambah Produk
-      </button>
-
-    </div>
-
-    {/* PRODUCTS */}
-{menu === "products" && (
-
-  <div className="grid gap-5">
-
-    {products.map((product) => (
-
-      <div
-        key={product.id}
-        className="bg-zinc-900 rounded-3xl p-6"
-      >
-
-        <div className="flex items-start justify-between gap-4">
-
-          <div>
-
-            <h2 className="text-3xl font-bold text-cyan-400">
-              {product.name}
-            </h2>
-
-            <p className="text-zinc-400 mt-2">
-              {product.category}
-            </p>
-
-          </div>
-
-          {product.is_activation && (
-
-            <div className="bg-yellow-500 text-black px-3 py-1 rounded-xl font-bold">
-
-              AKTIVASI
+              </div>
 
             </div>
 
           )}
 
-        </div>
+          {/* ADD PRODUCT */}
+          {menu === "add-product" && (
 
-        <div className="grid grid-cols-2 gap-4 mt-6">
+            <div className="bg-zinc-900 rounded-3xl p-6">
 
-          <div className="bg-black rounded-2xl p-4">
+              <h2 className="text-4xl font-bold text-cyan-400 mb-8">
+                Tambah Produk
+              </h2>
 
-            <p className="text-zinc-400 text-sm">
-              Harga
-            </p>
+              <div className="grid gap-4">
 
-            <p className="text-green-400 text-2xl font-bold mt-2">
+                <input
+                  type="text"
+                  placeholder="Nama Produk"
+                  value={name}
+                  onChange={(e) =>
+                    setName(
+                      e.target.value
+                    )
+                  }
+                  className="bg-black rounded-2xl px-4 py-4"
+                />
 
-              Rp{" "}
-              {Number(
-                product.price || 0
-              ).toLocaleString()}
+                <input
+                  type="text"
+                  placeholder="Kategori"
+                  value={category}
+                  onChange={(e) =>
+                    setCategory(
+                      e.target.value
+                    )
+                  }
+                  className="bg-black rounded-2xl px-4 py-4"
+                />
 
-            </p>
+                <input
+                  type="number"
+                  placeholder="Harga Produk"
+                  value={price}
+                  onChange={(e) =>
+                    setPrice(
+                      e.target.value
+                    )
+                  }
+                  className="bg-black rounded-2xl px-4 py-4"
+                />
 
-          </div>
+                <input
+                  type="number"
+                  placeholder="Profit"
+                  value={profit}
+                  onChange={(e) =>
+                    setProfit(
+                      e.target.value
+                    )
+                  }
+                  className="bg-black rounded-2xl px-4 py-4"
+                />
 
-          <div className="bg-black rounded-2xl p-4">
+                <input
+                  type="number"
+                  placeholder="Bonus Referral (%)"
+                  value={referralBonus}
+                  onChange={(e) =>
+                    setReferralBonus(
+                      e.target.value
+                    )
+                  }
+                  className="bg-black rounded-2xl px-4 py-4"
+                />
 
-            <p className="text-zinc-400 text-sm">
-              Profit
-            </p>
+                <button
+                  onClick={async () => {
 
-            <p className="text-cyan-400 text-2xl font-bold mt-2">
+                    await supabase
+                      .from("products")
+                      .insert([
+                        {
+                          name,
+                          category,
 
-              Rp{" "}
-              {Number(
-                product.profit || 0
-              ).toLocaleString()}
+                          price:
+                            Number(price),
 
-            </p>
+                          profit:
+                            Number(profit),
 
-          </div>
+                          referral_bonus_percent:
+                            Number(
+                              referralBonus
+                            ),
 
-        </div>
+                          status:
+                            "active",
 
-        <div className="mt-5">
+                          is_activation:
+                            false,
+                        },
+                      ]);
 
-          <p className="text-yellow-400 font-bold">
+                    alert(
+                      "Produk berhasil ditambah"
+                    );
 
-            Bonus Referral:
-            {" "}
-            {product.referral_bonus_percent || 0}%
+                    setName("");
+                    setCategory("");
+                    setPrice("");
+                    setProfit("");
+                    setReferralBonus("");
 
-          </p>
+                    getData();
 
-        </div>
+                  }}
+                  className="bg-cyan-400 text-black py-4 rounded-2xl font-bold"
+                >
+                  Tambah Produk
+                </button>
 
-        <div className="flex flex-wrap gap-3 mt-6">
-
-          {/* PRODUK AKTIVASI */}
-          <button
-            onClick={async () => {
-
-              await supabase
-                .from("products")
-                .update({
-                  is_activation:
-                    false,
-                })
-                .neq("id", 0);
-
-              await supabase
-                .from("products")
-                .update({
-                  is_activation:
-                    true,
-                })
-                .eq(
-                  "id",
-                  product.id
-                );
-
-              alert(
-                "Produk aktivasi diganti"
-              );
-
-              getData();
-
-            }}
-            className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
-          >
-            Jadikan Aktivasi
-          </button>
-
-          {/* STATUS */}
-          <button
-            onClick={async () => {
-
-              await supabase
-                .from("products")
-                .update({
-                  status:
-                    product.status ===
-                    "active"
-                      ? "inactive"
-                      : "active",
-                })
-                .eq(
-                  "id",
-                  product.id
-                );
-
-              getData();
-
-            }}
-            className="bg-yellow-500 text-black px-5 py-3 rounded-2xl font-bold"
-          >
-
-            {product.status ===
-            "active"
-              ? "Nonaktifkan"
-              : "Aktifkan"}
-
-          </button>
-
-          {/* DELETE */}
-          <button
-            onClick={async () => {
-
-              const confirmDelete =
-                confirm(
-                  "Hapus produk?"
-                );
-
-              if (!confirmDelete)
-                return;
-
-              await supabase
-                .from("products")
-                .delete()
-                .eq(
-                  "id",
-                  product.id
-                );
-
-              getData();
-
-            }}
-            className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
-          >
-            Hapus
-          </button>
-
-        </div>
-
-      </div>
-
-    ))}
-
-  </div>
-
-)}
-
-  </div>
-
-)} 
+              </div>
 
             </div>
 
+          )}
+
+          {/* PRODUCTS */}
+          {menu === "products" && (
+
             <div className="grid gap-5">
 
-              {filteredMembers.map(
-                (member) => (
+              {products.map((product) => (
+
+                <div
+                  key={product.id}
+                  className="bg-zinc-900 rounded-3xl p-6"
+                >
+
+                  <div className="flex items-start justify-between">
+
+                    <div>
+
+                      <h2 className="text-3xl font-bold text-cyan-400">
+                        {product.name}
+                      </h2>
+
+                      <p className="text-zinc-400 mt-2">
+                        {product.category}
+                      </p>
+
+                    </div>
+
+                    {product.is_activation && (
+
+                      <div className="bg-yellow-500 text-black px-3 py-1 rounded-xl font-bold">
+                        AKTIVASI
+                      </div>
+
+                    )}
+
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mt-6">
+
+                    <div className="bg-black rounded-2xl p-4">
+
+                      <p className="text-zinc-400">
+                        Harga
+                      </p>
+
+                      <h3 className="text-green-400 text-3xl font-bold mt-2">
+
+                        Rp{" "}
+                        {Number(
+                          product.price || 0
+                        ).toLocaleString()}
+
+                      </h3>
+
+                    </div>
+
+                    <div className="bg-black rounded-2xl p-4">
+
+                      <p className="text-zinc-400">
+                        Profit
+                      </p>
+
+                      <h3 className="text-cyan-400 text-3xl font-bold mt-2">
+
+                        Rp{" "}
+                        {Number(
+                          product.profit || 0
+                        ).toLocaleString()}
+
+                      </h3>
+
+                    </div>
+
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 mt-6">
+
+                    <button
+                      onClick={async () => {
+
+                        await supabase
+                          .from("products")
+                          .update({
+                            is_activation:
+                              false,
+                          })
+                          .neq(
+                            "id",
+                            0
+                          );
+
+                        await supabase
+                          .from("products")
+                          .update({
+                            is_activation:
+                              true,
+                          })
+                          .eq(
+                            "id",
+                            product.id
+                          );
+
+                        getData();
+
+                      }}
+                      className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
+                    >
+                      Jadikan Aktivasi
+                    </button>
+
+                    <button
+                      onClick={async () => {
+
+                        await supabase
+                          .from("products")
+                          .update({
+                            status:
+                              product.status ===
+                              "active"
+                                ? "inactive"
+                                : "active",
+                          })
+                          .eq(
+                            "id",
+                            product.id
+                          );
+
+                        getData();
+
+                      }}
+                      className="bg-yellow-500 text-black px-5 py-3 rounded-2xl font-bold"
+                    >
+
+                      {product.status ===
+                      "active"
+                        ? "Nonaktifkan"
+                        : "Aktifkan"}
+
+                    </button>
+
+                    <button
+                      onClick={async () => {
+
+                        await supabase
+                          .from("products")
+                          .delete()
+                          .eq(
+                            "id",
+                            product.id
+                          );
+
+                        getData();
+
+                      }}
+                      className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
+                    >
+                      Hapus
+                    </button>
+
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          )}
+
+          {/* MEMBERS */}
+          {menu === "members" && (
+
+            <div className="grid gap-5">
+
+              {members.map((member) => (
 
                 <div
                   key={member.id}
@@ -774,60 +641,14 @@ export default function AdminPage() {
                     {member.whatsapp}
                   </p>
 
-                  <div className="mt-5 space-y-2">
+                  <p className="text-green-400 text-2xl font-bold mt-4">
 
-                    <p className="text-cyan-400">
-                      Referral:
-                      {" "}
-                      {member.referral_code}
-                    </p>
+                    Rp{" "}
+                    {Number(
+                      member.saldo || 0
+                    ).toLocaleString()}
 
-                    <p className="text-green-400 font-bold">
-                      Rp{" "}
-                      {Number(
-                        member.saldo || 0
-                      ).toLocaleString()}
-                    </p>
-
-                    <p className="text-yellow-400">
-                      {member.status}
-                    </p>
-
-                  </div>
-
-                  {/* AKTIVASI */}
-                  {member.status ===
-                    "pending" && (
-
-                    <button
-                      onClick={async () => {
-
-                        await supabase
-                          .from(
-                            "members"
-                          )
-                          .update({
-                            status:
-                              "active",
-                          })
-                          .eq(
-                            "id",
-                            member.id
-                          );
-
-                        alert(
-                          "Member diaktivasi"
-                        );
-
-                        getData();
-
-                      }}
-                      className="mt-5 bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
-                    >
-                      Aktivasi Member
-                    </button>
-
-                  )}
+                  </p>
 
                 </div>
 
@@ -835,9 +656,9 @@ export default function AdminPage() {
 
             </div>
 
-          </div>
+          )}
 
-        )}
+        </div>
 
       </div>
 
