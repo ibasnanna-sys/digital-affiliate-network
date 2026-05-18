@@ -508,12 +508,24 @@ if (member) {
           : "bg-yellow-500 text-black"
       }`}
     >
-      {member.status === "active"
-        ? "AKTIF"
-        : "FREE"}
-    </span>
+      <span
+  className={`px-4 py-2 rounded-xl font-bold ${
+    member.status === "active"
+      ? "bg-green-500 text-white"
+      : member.status === "pending"
+      ? "bg-yellow-500 text-black"
+      : "bg-zinc-700 text-white"
+  }`}
+>
+  {member.status === "active"
+    ? "AKTIF"
+    : member.status === "pending"
+    ? "PENDING"
+    : "FREE"}
+</span>
 
-    {member.status !== "active" && (
+{/* TOMBOL AKTIVASI */}
+{member.status === "free" && (
   <button
     onClick={async () => {
 
@@ -525,12 +537,13 @@ if (member) {
         .eq("id", member.id);
 
       alert(
-        "Request aktivasi berhasil dikirim, tunggu approve admin"
+        "Request aktivasi berhasil dikirim"
       );
 
       window.location.reload();
+
     }}
-    className="bg-cyan-400 text-black px-5 py-2 rounded-xl font-bold"
+    className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
   >
     Aktivasi Sekarang
   </button>
