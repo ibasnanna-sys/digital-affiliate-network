@@ -424,6 +424,336 @@ export default function AdminPage() {
                 className="w-full bg-black border border-zinc-700 rounded-2xl px-4 py-3"
               />
 
+             {/* ADD PRODUCT */}
+{menu === "add-product" && (
+
+  <div className="bg-zinc-900 rounded-3xl p-6">
+
+    <h2 className="text-3xl font-bold text-cyan-400 mb-6">
+      Tambah Produk
+    </h2>
+
+    <div className="grid gap-4">
+
+      <input
+        type="text"
+        placeholder="Nama Produk"
+        value={name}
+        onChange={(e) =>
+          setName(e.target.value)
+        }
+        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <input
+        type="text"
+        placeholder="Kategori"
+        value={category}
+        onChange={(e) =>
+          setCategory(
+            e.target.value
+          )
+        }
+        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <input
+        type="number"
+        placeholder="Harga Produk"
+        value={price}
+        onChange={(e) =>
+          setPrice(
+            e.target.value
+          )
+        }
+        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <input
+        type="number"
+        placeholder="Profit"
+        value={profit}
+        onChange={(e) =>
+          setProfit(
+            e.target.value
+          )
+        }
+        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <input
+        type="number"
+        placeholder="Bonus Referral (%)"
+        value={referralBonus}
+        onChange={(e) =>
+          setReferralBonus(
+            e.target.value
+          )
+        }
+        className="bg-black border border-zinc-700 rounded-2xl px-4 py-3"
+      />
+
+      <button
+        onClick={async () => {
+
+          if (
+            !name ||
+            !category ||
+            !price
+          ) {
+
+            alert(
+              "Lengkapi data produk"
+            );
+
+            return;
+
+          }
+
+          await supabase
+            .from("products")
+            .insert([
+              {
+                name,
+                category,
+
+                price:
+                  Number(price),
+
+                profit:
+                  Number(profit),
+
+                referral_bonus_percent:
+                  Number(
+                    referralBonus
+                  ),
+
+                status:
+                  "active",
+
+                is_activation:
+                  false,
+              },
+            ]);
+
+          alert(
+            "Produk berhasil ditambah"
+          );
+
+          setName("");
+          setCategory("");
+          setPrice("");
+          setProfit("");
+          setReferralBonus("");
+
+          getData();
+
+        }}
+        className="bg-cyan-400 text-black py-4 rounded-2xl font-bold"
+      >
+        Tambah Produk
+      </button>
+
+    </div>
+
+    {/* PRODUCTS */}
+{menu === "products" && (
+
+  <div className="grid gap-5">
+
+    {products.map((product) => (
+
+      <div
+        key={product.id}
+        className="bg-zinc-900 rounded-3xl p-6"
+      >
+
+        <div className="flex items-start justify-between gap-4">
+
+          <div>
+
+            <h2 className="text-3xl font-bold text-cyan-400">
+              {product.name}
+            </h2>
+
+            <p className="text-zinc-400 mt-2">
+              {product.category}
+            </p>
+
+          </div>
+
+          {product.is_activation && (
+
+            <div className="bg-yellow-500 text-black px-3 py-1 rounded-xl font-bold">
+
+              AKTIVASI
+
+            </div>
+
+          )}
+
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mt-6">
+
+          <div className="bg-black rounded-2xl p-4">
+
+            <p className="text-zinc-400 text-sm">
+              Harga
+            </p>
+
+            <p className="text-green-400 text-2xl font-bold mt-2">
+
+              Rp{" "}
+              {Number(
+                product.price || 0
+              ).toLocaleString()}
+
+            </p>
+
+          </div>
+
+          <div className="bg-black rounded-2xl p-4">
+
+            <p className="text-zinc-400 text-sm">
+              Profit
+            </p>
+
+            <p className="text-cyan-400 text-2xl font-bold mt-2">
+
+              Rp{" "}
+              {Number(
+                product.profit || 0
+              ).toLocaleString()}
+
+            </p>
+
+          </div>
+
+        </div>
+
+        <div className="mt-5">
+
+          <p className="text-yellow-400 font-bold">
+
+            Bonus Referral:
+            {" "}
+            {product.referral_bonus_percent || 0}%
+
+          </p>
+
+        </div>
+
+        <div className="flex flex-wrap gap-3 mt-6">
+
+          {/* PRODUK AKTIVASI */}
+          <button
+            onClick={async () => {
+
+              await supabase
+                .from("products")
+                .update({
+                  is_activation:
+                    false,
+                })
+                .neq("id", 0);
+
+              await supabase
+                .from("products")
+                .update({
+                  is_activation:
+                    true,
+                })
+                .eq(
+                  "id",
+                  product.id
+                );
+
+              alert(
+                "Produk aktivasi diganti"
+              );
+
+              getData();
+
+            }}
+            className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
+          >
+            Jadikan Aktivasi
+          </button>
+
+          {/* STATUS */}
+          <button
+            onClick={async () => {
+
+              await supabase
+                .from("products")
+                .update({
+                  status:
+                    product.status ===
+                    "active"
+                      ? "inactive"
+                      : "active",
+                })
+                .eq(
+                  "id",
+                  product.id
+                );
+
+              getData();
+
+            }}
+            className="bg-yellow-500 text-black px-5 py-3 rounded-2xl font-bold"
+          >
+
+            {product.status ===
+            "active"
+              ? "Nonaktifkan"
+              : "Aktifkan"}
+
+          </button>
+
+          {/* DELETE */}
+          <button
+            onClick={async () => {
+
+              const confirmDelete =
+                confirm(
+                  "Hapus produk?"
+                );
+
+              if (!confirmDelete)
+                return;
+
+              await supabase
+                .from("products")
+                .delete()
+                .eq(
+                  "id",
+                  product.id
+                );
+
+              getData();
+
+            }}
+            className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
+          >
+            Hapus
+          </button>
+
+        </div>
+
+      </div>
+
+    ))}
+
+  </div>
+
+)}
+
+  </div>
+
+)} 
+
             </div>
 
             <div className="grid gap-5">
