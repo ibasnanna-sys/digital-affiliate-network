@@ -35,35 +35,51 @@ export default function ProdukPage() {
 
   }, []);
 
-  // =========================
-  // GET PRODUCTS
-  // =========================
-  const getProducts = async () => {
+  ```javascript id="j3e1pb"
+// =========================
+// GET PRODUCTS
+// =========================
+const getProducts = async () => {
 
-    setLoading(true);
+  setLoading(true);
 
-    const { data, error } =
-      await supabase
-        .from("products")
-        .select("*")
-        .eq("status", true)
-        .order("id", {
-          ascending: true,
-        });
+  // AMBIL SEMUA PRODUK
+  const { data, error } =
+    await supabase
+      .from("products")
+      .select("*")
+      .order("id", {
+        ascending: true,
+      });
 
-    if (error) {
+  if (error) {
 
-      console.log(error);
+    console.log(error);
 
-    } else {
+  } else {
 
-      setProducts(data || []);
+    // FILTER PRODUK AKTIF
+    const activeProducts =
+      (data || []).filter(
+        (item) =>
 
-    }
+          // SUPPORT BOOLEAN
+          item.status === true ||
 
-    setLoading(false);
+          // SUPPORT STRING LAMA
+          item.status === "active"
 
-  };
+      );
+
+    setProducts(activeProducts);
+
+  }
+
+  setLoading(false);
+
+};
+```
+
 
   // =========================
   // BUY PRODUCT
