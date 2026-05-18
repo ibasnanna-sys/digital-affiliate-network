@@ -513,7 +513,7 @@ if (member) {
         : "FREE"}
     </span>
 
-    {member.status === "free" && (
+    {member.status !== "active" && (
   <button
     onClick={async () => {
 
