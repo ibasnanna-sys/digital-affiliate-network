@@ -1,148 +1,178 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 
-export default function RegisterPage() {
+export default function ProdukPage() {
 
-  const router = useRouter();
+  const [member, setMember] =
+    useState(null);
 
-  const [name, setName] =
-    useState("");
-
-  const [whatsapp, setWhatsapp] =
-    useState("");
-
-  const [alamat, setAlamat] =
-    useState("");
-
-  const [kota, setKota] =
-    useState("");
-
-  const [password, setPassword] =
-    useState("");
+  const [products, setProducts] =
+    useState([]);
 
   const [loading, setLoading] =
-    useState(false);
+    useState(true);
+
+  const [buyingId, setBuyingId] =
+    useState(null);
 
   // =========================
-  // REGISTER MEMBER
+  // GET MEMBER & PRODUCTS
   // =========================
-  const handleRegister =
-    async (e) => {
+  useEffect(() => {
 
-      e.preventDefault();
+    const localMember = JSON.parse(
+      localStorage.getItem("member")
+    );
 
-      if (
-        !name ||
-        !whatsapp ||
-        !alamat ||
-        !kota ||
-        !password
-      ) {
+    if (localMember) {
+      setMember(localMember);
+    }
 
-        alert(
-          "Lengkapi semua data"
-        );
+    getProducts();
+
+  }, []);
+
+  // =========================
+  // GET PRODUCTS
+  // =========================
+  const getProducts = async () => {
+
+    setLoading(true);
+
+    const { data, error } =
+      await supabase
+        .from("products")
+        .select("*")
+        .eq("status", "active")
+        .order("is_activation", {
+          ascending: false,
+        })
+        .order("id", {
+          ascending: true,
+        });
+
+    if (error) {
+
+      console.log(error);
+
+    } else {
+
+      setProducts(data || []);
+
+    }
+
+    setLoading(false);
+
+  };
+
+  // =========================
+  // BUY PRODUCT
+  // =========================
+  const handleBuyProduct =
+    async (product) => {
+
+      if (!member) {
+
+        alert("Silakan login");
 
         return;
 
       }
 
-      setLoading(true);
+      setBuyingId(product.id);
 
       // =========================
-      // CHECK WHATSAPP
+      // INSERT TRANSACTION
       // =========================
-      const {
-        data: existingMember,
-      } = await supabase
-        .from("members")
-        .select("id")
-        .eq(
-          "whatsapp",
-          whatsapp
-        )
-        .maybeSingle();
+      const { error } =
+        await supabase
+          .from("transactions")
+          .insert([
+            {
+              member_id:
+                member.id,
 
-      if (existingMember) {
+              member_name:
+                member.name,
 
-        alert(
-          "Nomor WhatsApp sudah terdaftar"
-        );
+              whatsapp:
+                member.whatsapp,
 
-        setLoading(false);
+              product_name:
+                product.name,
 
-        return;
+              category:
+                product.category,
 
-      }
+              amount:
+                product.price,
 
-      // =========================
-      // GENERATE MEMBER ID
-      // =========================
-      const randomNumber =
-        Math.floor(
-          1000 +
-          Math.random() * 9000
-        );
+              profit:
+                product.profit,
 
-      const memberCode =
-        `DAN${randomNumber}`;
+              sponsor_bonus:
+                Math.floor(
+                  Number(
+                    product.profit || 0
+                  ) *
+                  Number(
+                    product.referral_bonus_percent || 0
+                  ) / 100
+                ),
 
-      // =========================
-      // INSERT MEMBER
-      // =========================
-      const {
-        data,
-        error,
-      } = await supabase
-        .from("members")
-        .insert([
-          {
-            name,
-            whatsapp,
-            alamat,
-            kota,
-            password,
-            member_code:
-              memberCode,
-            status:
-              "pending",
-          },
-        ])
-        .select()
-        .single();
+              status:
+                "pending",
+            },
+          ]);
 
       if (error) {
 
         console.log(error);
 
-        alert(
-          "Registrasi gagal"
-        );
+        alert("Order gagal");
 
-        setLoading(false);
+        setBuyingId(null);
 
         return;
 
       }
 
       // =========================
-      // SAVE MEMBER LOGIN
+      // PRODUK AKTIVASI
       // =========================
-      localStorage.setItem(
-        "member",
-        JSON.stringify(data)
-      );
+      if (
+        product.is_activation &&
+        member.status !== "active"
+      ) {
+
+        const updatedMember = {
+          ...member,
+          status: "active",
+        };
+
+        await supabase
+          .from("members")
+          .update({
+            status: "active",
+          })
+          .eq("id", member.id);
+
+        setMember(updatedMember);
+
+        localStorage.setItem(
+          "member",
+          JSON.stringify(updatedMember)
+        );
+
+      }
 
       alert(
-        "Registrasi berhasil"
+        "Order berhasil masuk"
       );
 
-      router.push(
-        "/produk"
-      );
+      setBuyingId(null);
 
     };
 
@@ -153,285 +183,359 @@ export default function RegisterPage() {
         min-h-screen
         bg-black
         text-white
-        flex
-        items-center
-        justify-center
         p-4
+        md:p-6
       "
     >
 
-      <div
-        className="
-          w-full
-          max-w-2xl
-          bg-zinc-900
-          border
-          border-cyan-500/20
-          rounded-3xl
-          p-6
-          md:p-8
-        "
-      >
+      {/* HEADER */}
+      <div className="mb-8 md:mb-10">
 
-        {/* HEADER */}
-        <div className="mb-8">
+        <h1
+          className="
+            text-4xl
+            md:text-5xl
+            font-bold
+            text-cyan-400
+          "
+        >
 
-          <h1
+          Produk Digital
+
+        </h1>
+
+        <p
+          className="
+            text-zinc-400
+            mt-3
+            text-sm
+            md:text-base
+          "
+        >
+
+          Paket Data, Pulsa, PPOB
+
+        </p>
+
+        <p
+          className="
+            text-cyan-400
+            mt-4
+            text-sm
+            md:text-base
+          "
+        >
+
+          Selamat datang di DAN Digital Network
+
+        </p>
+
+      </div>
+
+      {/* MEMBER INFO */}
+      {member && (
+
+        <div
+          className="
+            bg-zinc-900
+            border
+            border-cyan-500/20
+            rounded-3xl
+            p-5
+            md:p-6
+            mb-8
+          "
+        >
+
+          <h2
             className="
               text-3xl
-              md:text-5xl
+              md:text-4xl
               font-bold
-              text-cyan-400
+              break-words
             "
           >
 
-            Registrasi Member
+            {member.name}
 
-          </h1>
+          </h2>
 
           <p
             className="
               text-zinc-400
               mt-3
+              break-all
             "
           >
 
-            Daftar menjadi member DAN
+            {member.whatsapp}
+
+          </p>
+
+          {/* MEMBER ID */}
+          <p
+            className="
+              text-cyan-400
+              mt-2
+              font-bold
+            "
+          >
+
+            ID Member :
+            {" "}
+            {member.member_code}
+
+          </p>
+
+          {/* STATUS */}
+          <div className="mt-5">
+
+            <span
+              className={`
+                px-4
+                py-2
+                rounded-2xl
+                text-sm
+                font-bold
+                border
+                ${
+                  member.status ===
+                  "active"
+                    ? "bg-green-500/20 border-green-500 text-green-400"
+                    : member.status ===
+                      "pending"
+                    ? "bg-yellow-500/20 border-yellow-500 text-yellow-400"
+                    : "bg-zinc-800 border-zinc-700 text-zinc-300"
+                }
+              `}
+            >
+
+              {member.status ===
+              "active"
+                ? "ACTIVE"
+                : member.status ===
+                  "pending"
+                ? "PENDING"
+                : "FROZEN"}
+
+            </span>
+
+          </div>
+
+        </div>
+
+      )}
+
+      {/* LOADING */}
+      {loading && (
+
+        <div
+          className="
+            bg-zinc-900
+            rounded-3xl
+            p-6
+          "
+        >
+
+          <p className="text-zinc-400">
+
+            Memuat produk...
 
           </p>
 
         </div>
 
-        {/* FORM */}
-        <form
-          onSubmit={
-            handleRegister
-          }
-          className="space-y-5"
+      )}
+
+      {/* EMPTY */}
+      {!loading &&
+        products.length === 0 && (
+
+        <div
+          className="
+            bg-zinc-900
+            rounded-3xl
+            p-6
+          "
         >
 
-          {/* NAMA */}
-          <div>
+          <p className="text-zinc-400">
 
-            <label
+            Produk belum tersedia
+
+          </p>
+
+        </div>
+
+      )}
+
+      {/* PRODUCTS */}
+      {!loading &&
+        products.length > 0 && (
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-3
+            gap-5
+          "
+        >
+
+          {products.map((product) => (
+
+            <div
+              key={product.id}
               className="
-                block
-                mb-2
-                text-sm
-                text-zinc-400
+                bg-zinc-900
+                border
+                border-cyan-500/20
+                rounded-3xl
+                p-5
+                transition-all
+                hover:border-cyan-400
+                hover:scale-[1.01]
               "
             >
 
-              Nama Lengkap
+              {/* TOP */}
+              <div
+                className="
+                  flex
+                  items-start
+                  justify-between
+                  gap-4
+                "
+              >
 
-            </label>
+                <div>
 
-            <input
-              type="text"
-              value={name}
-              onChange={(e) =>
-                setName(
-                  e.target.value
-                )
-              }
-              placeholder="Masukkan nama lengkap"
-              className="
-                w-full
-                bg-black
-                border
-                border-zinc-700
-                rounded-2xl
-                p-4
-                outline-none
-                focus:border-cyan-400
-              "
-            />
+                  <h2
+                    className="
+                      text-3xl
+                      font-bold
+                      text-cyan-400
+                      break-words
+                    "
+                  >
 
-          </div>
+                    {product.name}
 
-          {/* WHATSAPP */}
-          <div>
+                  </h2>
 
-            <label
-              className="
-                block
-                mb-2
-                text-sm
-                text-zinc-400
-              "
-            >
+                  <p
+                    className="
+                      text-zinc-400
+                      mt-2
+                    "
+                  >
 
-              Nomor WhatsApp
+                    {product.category}
 
-            </label>
+                  </p>
 
-            <input
-              type="text"
-              value={whatsapp}
-              onChange={(e) =>
-                setWhatsapp(
-                  e.target.value
-                )
-              }
-              placeholder="08xxxxxxxxxx"
-              className="
-                w-full
-                bg-black
-                border
-                border-zinc-700
-                rounded-2xl
-                p-4
-                outline-none
-                focus:border-cyan-400
-              "
-            />
+                </div>
 
-          </div>
+                {product.is_activation && (
 
-          {/* ALAMAT */}
-          <div>
+                  <div
+                    className="
+                      bg-yellow-500/20
+                      border
+                      border-yellow-500
+                      text-yellow-400
+                      px-3
+                      py-1
+                      rounded-2xl
+                      text-xs
+                      md:text-sm
+                      font-bold
+                      whitespace-nowrap
+                    "
+                  >
 
-            <label
-              className="
-                block
-                mb-2
-                text-sm
-                text-zinc-400
-              "
-            >
+                    AKTIVASI
 
-              Alamat Lengkap
+                  </div>
 
-            </label>
+                )}
 
-            <textarea
-              value={alamat}
-              onChange={(e) =>
-                setAlamat(
-                  e.target.value
-                )
-              }
-              placeholder="Masukkan alamat lengkap"
-              className="
-                w-full
-                bg-black
-                border
-                border-zinc-700
-                rounded-2xl
-                p-4
-                outline-none
-                focus:border-cyan-400
-                min-h-[120px]
-              "
-            />
+              </div>
 
-          </div>
+              {/* PRICE */}
+              <div className="mt-6">
 
-          {/* KOTA */}
-          <div>
+                <p
+                  className="
+                    text-zinc-400
+                    text-sm
+                  "
+                >
 
-            <label
-              className="
-                block
-                mb-2
-                text-sm
-                text-zinc-400
-              "
-            >
+                  Harga Produk
 
-              Kota
+                </p>
 
-            </label>
+                <h3
+                  className="
+                    text-4xl
+                    font-bold
+                    text-green-400
+                    mt-2
+                    break-words
+                  "
+                >
 
-            <input
-              type="text"
-              value={kota}
-              onChange={(e) =>
-                setKota(
-                  e.target.value
-                )
-              }
-              placeholder="Masukkan kota"
-              className="
-                w-full
-                bg-black
-                border
-                border-zinc-700
-                rounded-2xl
-                p-4
-                outline-none
-                focus:border-cyan-400
-              "
-            />
+                  Rp{" "}
+                  {Number(
+                    product.price || 0
+                  ).toLocaleString()}
 
-          </div>
+                </h3>
 
-          {/* PASSWORD */}
-          <div>
+              </div>
 
-            <label
-              className="
-                block
-                mb-2
-                text-sm
-                text-zinc-400
-              "
-            >
+              {/* BUTTON */}
+              <button
+                disabled={
+                  buyingId ===
+                  product.id
+                }
+                onClick={() =>
+                  handleBuyProduct(
+                    product
+                  )
+                }
+                className="
+                  w-full
+                  mt-8
+                  bg-cyan-400
+                  text-black
+                  py-4
+                  rounded-2xl
+                  font-bold
+                  transition-all
+                  hover:bg-cyan-300
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed
+                "
+              >
 
-              Password
+                {buyingId ===
+                product.id
+                  ? "Memproses..."
+                  : "Beli Produk"}
 
-            </label>
+              </button>
 
-            <input
-              type="password"
-              value={password}
-              onChange={(e) =>
-                setPassword(
-                  e.target.value
-                )
-              }
-              placeholder="Masukkan password"
-              className="
-                w-full
-                bg-black
-                border
-                border-zinc-700
-                rounded-2xl
-                p-4
-                outline-none
-                focus:border-cyan-400
-              "
-            />
+            </div>
 
-          </div>
+          ))}
 
-          {/* BUTTON */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="
-              w-full
-              bg-cyan-400
-              text-black
-              py-4
-              rounded-2xl
-              font-bold
-              transition-all
-              hover:bg-cyan-300
-              disabled:opacity-50
-              disabled:cursor-not-allowed
-            "
-          >
+        </div>
 
-            {loading
-              ? "Memproses..."
-              : "Daftar Sekarang"}
-
-          </button>
-
-        </form>
-
-      </div>
+      )}
 
     </main>
 
