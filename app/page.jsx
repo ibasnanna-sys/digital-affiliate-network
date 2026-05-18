@@ -9,10 +9,37 @@ export default function HomePage() {
 
   useEffect(() => {
 
-    router.push("/login");
+    router.replace("/login");
 
   }, []);
 
-  return null;
+  return (
+
+    <main
+      className="
+        min-h-screen
+        bg-black
+        flex
+        items-center
+        justify-center
+        text-white
+      "
+    >
+
+      <h1
+        className="
+          text-3xl
+          font-bold
+          text-cyan-400
+        "
+      >
+
+        Loading...
+
+      </h1>
+
+    </main>
+
+  );
 
 }
