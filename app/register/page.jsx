@@ -27,7 +27,7 @@ export default function RegisterPage() {
     useState(false);
 
   // =========================
-  // REGISTER MEMBER
+  // REGISTER
   // =========================
   const handleRegister =
     async (e) => {
@@ -53,7 +53,7 @@ export default function RegisterPage() {
       setLoading(true);
 
       // =========================
-      // CHECK WHATSAPP
+      // CHECK MEMBER
       // =========================
       const {
         data: existingMember,
@@ -129,7 +129,7 @@ export default function RegisterPage() {
       }
 
       // =========================
-      // SAVE MEMBER LOGIN
+      // SAVE LOGIN
       // =========================
       localStorage.setItem(
         "member",
@@ -178,7 +178,7 @@ export default function RegisterPage() {
 
           <h1
             className="
-              text-3xl
+              text-4xl
               md:text-5xl
               font-bold
               text-cyan-400
@@ -196,7 +196,7 @@ export default function RegisterPage() {
             "
           >
 
-            Daftar menjadi member DAN
+            Daftar menjadi member DAN Digital Network
 
           </p>
 
@@ -319,9 +319,9 @@ export default function RegisterPage() {
                 border-zinc-700
                 rounded-2xl
                 p-4
+                min-h-[120px]
                 outline-none
                 focus:border-cyan-400
-                min-h-[120px]
               "
             />
 
