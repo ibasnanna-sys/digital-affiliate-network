@@ -506,6 +506,41 @@ if (member) {
   <p className="text-zinc-400">
     Saldo Bonus
   </p>
+          
+            <div className="mt-6">
+
+  <p className="text-zinc-400">
+    Status Member
+  </p>
+
+  <div className="flex items-center gap-3 mt-2">
+
+    <span
+      className={`px-4 py-2 rounded-xl font-bold ${
+        member.status === "active"
+          ? "bg-green-500 text-white"
+          : "bg-yellow-500 text-black"
+      }`}
+    >
+      {member.status === "active"
+        ? "AKTIF"
+        : "FREE"}
+    </span>
+
+    {member.status !== "active" && (
+      <button
+        onClick={() => {
+          window.location.href = "/produk";
+        }}
+        className="bg-cyan-400 text-black px-5 py-2 rounded-xl font-bold"
+      >
+        Aktivasi Sekarang
+      </button>
+    )}
+
+  </div>
+
+            </div>
 
   <h3 className="text-3xl font-bold text-green-400">
     Rp {member.saldo || 0}
