@@ -24,8 +24,8 @@ export default function DashboardPage() {
     fetchTransactions();
     fetchStats();
 
-    // Realtime update
-    const channel = supabase
+    // Supabase Realtime untuk members & transactions
+    const channelMembers = supabase
       .channel("live-member")
       .on(
         "postgres_changes",
@@ -34,18 +34,21 @@ export default function DashboardPage() {
       )
       .subscribe();
 
-    const transChannel = supabase
+    const channelTrans = supabase
       .channel("live-transactions")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "transactions" },
-        () => fetchTransactions()
+        () => {
+          fetchTransactions();
+          fetchStats();
+        }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
-      supabase.removeChannel(transChannel);
+      supabase.removeChannel(channelMembers);
+      supabase.removeChannel(channelTrans);
     };
   }, []);
 
@@ -87,19 +90,21 @@ export default function DashboardPage() {
 
     const { data: sponsorBonusData } = await supabase
       .from("transactions")
-      .select("sponsor_bonus");
+      .select("amount")
+      .eq("type", "sponsor");
 
     const { data: transactionBonusData } = await supabase
       .from("transactions")
-      .select("profit");
+      .select("amount")
+      .eq("type", "transaction");
 
     setStats({
       totalMember: totalMember || 0,
       totalReferral: totalReferralData?.length || 0,
       totalSponsorBonus:
-        sponsorBonusData?.reduce((acc, t) => acc + Number(t.sponsor_bonus || 0), 0) || 0,
+        sponsorBonusData?.reduce((acc, t) => acc + Number(t.amount || 0), 0) || 0,
       totalTransactionBonus:
-        transactionBonusData?.reduce((acc, t) => acc + Number(t.profit || 0), 0) || 0,
+        transactionBonusData?.reduce((acc, t) => acc + Number(t.amount || 0), 0) || 0,
     });
   };
 
@@ -133,7 +138,10 @@ export default function DashboardPage() {
             {member.status.toUpperCase()}
           </span>
           <div className="bg-black border border-zinc-700 p-2 rounded-xl">
-            <QRCode value={`https://domainkamu.com/register?ref=${member.member_code}`} size={64} />
+            <QRCode
+              value={`https://domainkamu.com/register?ref=${member.member_code}`}
+              size={64}
+            />
           </div>
         </div>
       </div>
@@ -175,7 +183,11 @@ export default function DashboardPage() {
           const top = 50 + radius * Math.sin((angle * Math.PI) / 180) / 300 * 100;
           const left = 50 + radius * Math.cos((angle * Math.PI) / 180) / 300 * 100;
           return (
-            <div key={m.id} className="absolute z-20" style={{ top: `${top}%`, left: `${left}%`, transform: "translate(-50%, -50%)" }}>
+            <div
+              key={m.id}
+              className="absolute z-20"
+              style={{ top: `${top}%`, left: `${left}%`, transform: "translate(-50%, -50%)" }}
+            >
               <div className="w-24 h-24 rounded-full flex flex-col items-center justify-center text-center border backdrop-blur-xl animate-bounce bg-cyan-500/10 border-cyan-500/30 text-cyan-400">
                 <div className="text-xs font-bold">{m.name}</div>
                 <div className="text-[10px] mt-1">{m.status}</div>
@@ -188,6 +200,38 @@ export default function DashboardPage() {
         </div>
         <div className="absolute bottom-6 right-6 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-5 py-3 rounded-2xl font-bold">
           Bonus Transaksi = Selamanya
+        </div>
+      </section>
+
+      {/* LIVE TRANSAKSI */}
+      <section className="mb-10">
+        <h2 className="text-3xl font-bold text-cyan-400 mb-4">Aktivitas Realtime Member</h2>
+        <div className="relative overflow-hidden bg-zinc-900 border border-cyan-500/20 rounded-3xl p-4">
+          <div className="flex gap-4 w-max animate-[marquee_35s_linear_infinite]">
+            {transactions.map((trx) => (
+              <div
+                key={trx.id}
+                className="min-w-[300px] bg-black border border-zinc-800 rounded-2xl p-4"
+              >
+                <p className="text-zinc-400 text-sm">{trx.type}</p>
+                <h3 className="font-bold mt-1">{trx.member_id}</h3>
+                <p className="text-zinc-400 mt-2">
+                  Nominal: Rp{Number(trx.amount).toLocaleString()}
+                </p>
+                <span
+                  className={`px-2 py-1 text-xs rounded-xl font-bold ${
+                    trx.status === "pending"
+                      ? "bg-yellow-500 text-black"
+                      : trx.status === "success"
+                      ? "bg-green-500 text-black"
+                      : "bg-zinc-700 text-white"
+                  }`}
+                >
+                  {trx.status.toUpperCase()}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
