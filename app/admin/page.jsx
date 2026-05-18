@@ -120,7 +120,36 @@ setWithdraws(withdrawData || []);
               {" "}
               {member.referral_code}
             </p>
+            
+<div className="mt-5 space-y-2">
 
+  <p className="text-green-400 font-bold">
+    Saldo:
+    {" "}
+    Rp {Number(member.saldo || 0).toLocaleString()}
+  </p>
+
+  <p className="text-cyan-400">
+    Total Referral:
+    {" "}
+    {member.total_referral || 0}
+  </p>
+
+  <p
+    className={`font-bold ${
+      member.status === "active"
+        ? "text-green-400"
+        : "text-yellow-400"
+    }`}
+  >
+    Status:
+    {" "}
+    {member.status === "active"
+      ? "AKTIF"
+      : "FREE"}
+  </p>
+
+</div>
           </div>
 
         ))}
