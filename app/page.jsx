@@ -525,7 +525,8 @@ if (member) {
 </span>
 
 {/* TOMBOL AKTIVASI */}
-{member.status === "free" && (
+{member.status !== "active" &&
+ member.status !== "pending" && (
   <button
     onClick={async () => {
 
@@ -536,9 +537,7 @@ if (member) {
         })
         .eq("id", member.id);
 
-      alert(
-        "Request aktivasi berhasil dikirim"
-      );
+      alert("Request aktivasi dikirim");
 
       window.location.reload();
 
