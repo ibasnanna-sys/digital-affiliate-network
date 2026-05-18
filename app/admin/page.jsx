@@ -100,38 +100,38 @@ export default function AdminPage() {
 
   return (
 
-    <main className="min-h-screen bg-black text-white p-5">
+    <main className="min-h-screen bg-black text-white p-4 md:p-6">
 
       {/* HEADER */}
       <div className="mb-10">
 
-        <h1 className="text-6xl font-bold text-cyan-400 leading-none">
+        <h1 className="text-4xl md:text-6xl font-bold text-cyan-400 leading-none">
           Admin
           <br />
           Dashboard
         </h1>
 
-        <p className="text-zinc-400 mt-4 text-xl">
+        <p className="text-zinc-400 mt-4 text-lg md:text-xl">
           Digital Affiliate Network
         </p>
 
       </div>
 
       {/* LAYOUT */}
-      <div className="grid grid-cols-12 gap-5">
+      <div className="grid md:grid-cols-12 gap-5">
 
         {/* SIDEBAR */}
-        <div className="col-span-4">
+        <div className="md:col-span-4">
 
-          <div className="bg-zinc-900 rounded-3xl p-4 sticky top-4">
+          <div className="bg-zinc-900 rounded-3xl p-4 md:sticky md:top-4">
 
-            <div className="grid gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
 
               <button
                 onClick={() =>
                   setMenu("dashboard")
                 }
-                className={`p-4 rounded-2xl text-left font-bold ${
+                className={`p-4 rounded-2xl text-left font-bold text-sm md:text-base ${
                   menu === "dashboard"
                     ? "bg-cyan-400 text-black"
                     : "bg-black"
@@ -144,7 +144,7 @@ export default function AdminPage() {
                 onClick={() =>
                   setMenu("add-product")
                 }
-                className={`p-4 rounded-2xl text-left font-bold ${
+                className={`p-4 rounded-2xl text-left font-bold text-sm md:text-base ${
                   menu === "add-product"
                     ? "bg-cyan-400 text-black"
                     : "bg-black"
@@ -157,7 +157,7 @@ export default function AdminPage() {
                 onClick={() =>
                   setMenu("products")
                 }
-                className={`p-4 rounded-2xl text-left font-bold ${
+                className={`p-4 rounded-2xl text-left font-bold text-sm md:text-base ${
                   menu === "products"
                     ? "bg-cyan-400 text-black"
                     : "bg-black"
@@ -170,7 +170,7 @@ export default function AdminPage() {
                 onClick={() =>
                   setMenu("members")
                 }
-                className={`p-4 rounded-2xl text-left font-bold ${
+                className={`p-4 rounded-2xl text-left font-bold text-sm md:text-base ${
                   menu === "members"
                     ? "bg-cyan-400 text-black"
                     : "bg-black"
@@ -183,20 +183,20 @@ export default function AdminPage() {
                 onClick={() =>
                   setMenu("transactions")
                 }
-                className={`p-4 rounded-2xl text-left font-bold ${
+                className={`p-4 rounded-2xl text-left font-bold text-sm md:text-base ${
                   menu === "transactions"
                     ? "bg-cyan-400 text-black"
                     : "bg-black"
                 }`}
               >
-                Histori Transaksi
+                Histori
               </button>
 
               <button
                 onClick={() =>
                   setMenu("withdraw")
                 }
-                className={`p-4 rounded-2xl text-left font-bold ${
+                className={`p-4 rounded-2xl text-left font-bold text-sm md:text-base ${
                   menu === "withdraw"
                     ? "bg-cyan-400 text-black"
                     : "bg-black"
@@ -212,7 +212,7 @@ export default function AdminPage() {
         </div>
 
         {/* CONTENT */}
-        <div className="col-span-8">
+        <div className="md:col-span-8">
 
           {/* DASHBOARD */}
           {menu === "dashboard" && (
@@ -220,51 +220,51 @@ export default function AdminPage() {
             <div>
 
               {/* STATISTIK */}
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-2 gap-4">
 
-                <div className="bg-zinc-900 rounded-3xl p-6">
+                <div className="bg-zinc-900 rounded-3xl p-5">
 
-                  <p className="text-zinc-400 text-2xl">
+                  <p className="text-zinc-400 text-sm md:text-xl">
                     Total Member
                   </p>
 
-                  <h2 className="text-6xl font-bold text-cyan-400 mt-5">
+                  <h2 className="text-4xl md:text-6xl font-bold text-cyan-400 mt-5">
                     {members.length}
                   </h2>
 
                 </div>
 
-                <div className="bg-zinc-900 rounded-3xl p-6">
+                <div className="bg-zinc-900 rounded-3xl p-5">
 
-                  <p className="text-zinc-400 text-2xl">
+                  <p className="text-zinc-400 text-sm md:text-xl">
                     Total Produk
                   </p>
 
-                  <h2 className="text-6xl font-bold text-green-400 mt-5">
+                  <h2 className="text-4xl md:text-6xl font-bold text-green-400 mt-5">
                     {products.length}
                   </h2>
 
                 </div>
 
-                <div className="bg-zinc-900 rounded-3xl p-6">
+                <div className="bg-zinc-900 rounded-3xl p-5">
 
-                  <p className="text-zinc-400 text-2xl">
+                  <p className="text-zinc-400 text-sm md:text-xl">
                     Withdraw
                   </p>
 
-                  <h2 className="text-6xl font-bold text-yellow-400 mt-5">
+                  <h2 className="text-4xl md:text-6xl font-bold text-yellow-400 mt-5">
                     {withdraws.length}
                   </h2>
 
                 </div>
 
-                <div className="bg-zinc-900 rounded-3xl p-6">
+                <div className="bg-zinc-900 rounded-3xl p-5">
 
-                  <p className="text-zinc-400 text-2xl">
+                  <p className="text-zinc-400 text-sm md:text-xl">
                     Transaksi
                   </p>
 
-                  <h2 className="text-6xl font-bold text-cyan-400 mt-5">
+                  <h2 className="text-4xl md:text-6xl font-bold text-cyan-400 mt-5">
                     {transactions.length}
                   </h2>
 
@@ -273,9 +273,9 @@ export default function AdminPage() {
               </div>
 
               {/* TOP MEMBER */}
-              <div className="bg-zinc-900 rounded-3xl p-6 mt-8">
+              <div className="bg-zinc-900 rounded-3xl p-5 md:p-6 mt-8">
 
-                <h2 className="text-5xl font-bold text-cyan-400 mb-8">
+                <h2 className="text-3xl md:text-5xl font-bold text-cyan-400 mb-8">
                   Top 5 Member
                 </h2>
 
@@ -287,16 +287,16 @@ export default function AdminPage() {
 
                       <div
                         key={member.id}
-                        className="bg-black rounded-3xl p-5 flex items-center justify-between"
+                        className="bg-black rounded-3xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
                       >
 
                         <div>
 
-                          <h3 className="text-3xl font-bold">
+                          <h3 className="text-2xl md:text-3xl font-bold">
                             #{index + 1} {member.name}
                           </h3>
 
-                          <p className="text-zinc-400 mt-2 text-xl">
+                          <p className="text-zinc-400 mt-2 text-base md:text-xl">
                             Referral:
                             {" "}
                             {member.total_referral || 0}
@@ -304,9 +304,9 @@ export default function AdminPage() {
 
                         </div>
 
-                        <div className="text-right">
+                        <div>
 
-                          <p className="text-green-400 text-3xl font-bold">
+                          <p className="text-green-400 text-2xl md:text-3xl font-bold">
 
                             Rp{" "}
                             {Number(
@@ -332,9 +332,9 @@ export default function AdminPage() {
           {/* ADD PRODUCT */}
           {menu === "add-product" && (
 
-            <div className="bg-zinc-900 rounded-3xl p-6">
+            <div className="bg-zinc-900 rounded-3xl p-5 md:p-6">
 
-              <h2 className="text-4xl font-bold text-cyan-400 mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-cyan-400 mb-8">
                 Tambah Produk
               </h2>
 
@@ -409,21 +409,16 @@ export default function AdminPage() {
                         {
                           name,
                           category,
-
                           price:
                             Number(price),
-
                           profit:
                             Number(profit),
-
                           referral_bonus_percent:
                             Number(
                               referralBonus
                             ),
-
                           status:
                             "active",
-
                           is_activation:
                             false,
                         },
@@ -462,14 +457,14 @@ export default function AdminPage() {
 
                 <div
                   key={product.id}
-                  className="bg-zinc-900 rounded-3xl p-6"
+                  className="bg-zinc-900 rounded-3xl p-5 md:p-6"
                 >
 
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
                     <div>
 
-                      <h2 className="text-3xl font-bold text-cyan-400">
+                      <h2 className="text-2xl md:text-3xl font-bold text-cyan-400">
                         {product.name}
                       </h2>
 
@@ -481,8 +476,8 @@ export default function AdminPage() {
 
                     {product.is_activation && (
 
-                      <div className="bg-yellow-500 text-black px-3 py-1 rounded-xl font-bold">
-                        AKTIVASI
+                      <div className="bg-yellow-500 text-black px-3 py-2 rounded-xl font-bold text-center">
+                        PRODUK AKTIVASI
                       </div>
 
                     )}
@@ -493,11 +488,11 @@ export default function AdminPage() {
 
                     <div className="bg-black rounded-2xl p-4">
 
-                      <p className="text-zinc-400">
+                      <p className="text-zinc-400 text-sm">
                         Harga
                       </p>
 
-                      <h3 className="text-green-400 text-3xl font-bold mt-2">
+                      <h3 className="text-green-400 text-xl md:text-3xl font-bold mt-2">
 
                         Rp{" "}
                         {Number(
@@ -510,11 +505,11 @@ export default function AdminPage() {
 
                     <div className="bg-black rounded-2xl p-4">
 
-                      <p className="text-zinc-400">
+                      <p className="text-zinc-400 text-sm">
                         Profit
                       </p>
 
-                      <h3 className="text-cyan-400 text-3xl font-bold mt-2">
+                      <h3 className="text-cyan-400 text-xl md:text-3xl font-bold mt-2">
 
                         Rp{" "}
                         {Number(
@@ -557,7 +552,7 @@ export default function AdminPage() {
                         getData();
 
                       }}
-                      className="bg-cyan-400 text-black px-5 py-3 rounded-2xl font-bold"
+                      className="bg-cyan-400 text-black px-4 py-3 rounded-2xl font-bold text-sm"
                     >
                       Jadikan Aktivasi
                     </button>
@@ -582,7 +577,7 @@ export default function AdminPage() {
                         getData();
 
                       }}
-                      className="bg-yellow-500 text-black px-5 py-3 rounded-2xl font-bold"
+                      className="bg-yellow-500 text-black px-4 py-3 rounded-2xl font-bold text-sm"
                     >
 
                       {product.status ===
@@ -606,7 +601,7 @@ export default function AdminPage() {
                         getData();
 
                       }}
-                      className="bg-red-500 px-5 py-3 rounded-2xl font-bold"
+                      className="bg-red-500 px-4 py-3 rounded-2xl font-bold text-sm"
                     >
                       Hapus
                     </button>
@@ -630,10 +625,10 @@ export default function AdminPage() {
 
                 <div
                   key={member.id}
-                  className="bg-zinc-900 rounded-3xl p-6"
+                  className="bg-zinc-900 rounded-3xl p-5 md:p-6"
                 >
 
-                  <h2 className="text-3xl font-bold">
+                  <h2 className="text-2xl md:text-3xl font-bold">
                     {member.name}
                   </h2>
 
@@ -641,7 +636,7 @@ export default function AdminPage() {
                     {member.whatsapp}
                   </p>
 
-                  <p className="text-green-400 text-2xl font-bold mt-4">
+                  <p className="text-green-400 text-xl md:text-2xl font-bold mt-4">
 
                     Rp{" "}
                     {Number(
