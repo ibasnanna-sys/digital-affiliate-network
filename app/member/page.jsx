@@ -1,29 +1,69 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import QRCode from "react-qr-code";
 
 export default function DashboardPage() {
   const [member, setMember] = useState(null);
+  const [membersNetwork, setMembersNetwork] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalMember: 0,
+    totalReferral: 0,
+    totalSponsorBonus: 0,
+    totalTransactionBonus: 0,
+  });
 
-  // =========================
-  // GET MEMBER FROM LOCAL STORAGE
-  // =========================
+  // Ambil member dari localStorage
   useEffect(() => {
     const localMember = JSON.parse(localStorage.getItem("member"));
-    if (localMember) setMember(localMember);
+    if (!localMember) return;
+    setMember(localMember);
+    fetchNetwork(localMember.id);
+    fetchTransactions();
+    fetchStats();
 
-    getTransactions();
-    getProducts();
+    // Realtime update
+    const channel = supabase
+      .channel("live-member")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "members" },
+        () => fetchNetwork(localMember.id)
+      )
+      .subscribe();
+
+    const transChannel = supabase
+      .channel("live-transactions")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "transactions" },
+        () => fetchTransactions()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+      supabase.removeChannel(transChannel);
+    };
   }, []);
 
   // =========================
-  // GET TRANSACTIONS
+  // FETCH NETWORK
   // =========================
-  const getTransactions = async () => {
+  const fetchNetwork = async (memberId) => {
+    const { data } = await supabase
+      .from("members")
+      .select("id,name,status,member_code,referrer_id")
+      .neq("id", memberId);
+    setMembersNetwork(data || []);
+  };
+
+  // =========================
+  // FETCH TRANSACTIONS
+  // =========================
+  const fetchTransactions = async () => {
     const { data } = await supabase
       .from("transactions")
       .select("*")
@@ -33,54 +73,34 @@ export default function DashboardPage() {
   };
 
   // =========================
-  // GET PRODUCTS
+  // FETCH STATS
   // =========================
-  const getProducts = async () => {
-    const { data } = await supabase
-      .from("products")
+  const fetchStats = async () => {
+    const { count: totalMember } = await supabase
+      .from("members")
+      .select("*", { count: "exact" });
+
+    const { data: totalReferralData } = await supabase
+      .from("members")
       .select("*")
-      .eq("status", "active")
-      .order("id", { ascending: true });
-    setProducts(data || []);
-    setLoading(false);
-  };
+      .eq("referrer_id", member?.id);
 
-  // =========================
-  // BUY PRODUCT
-  // =========================
-  const handleBuyProduct = async (product) => {
-    if (!member) return alert("Silakan login");
+    const { data: sponsorBonusData } = await supabase
+      .from("transactions")
+      .select("sponsor_bonus");
 
-    const { error } = await supabase.from("transactions").insert([
-      {
-        member_id: member.id,
-        member_name: member.name,
-        whatsapp: member.whatsapp,
-        product_name: product.name,
-        category: product.category,
-        amount: product.price,
-        profit: product.profit,
-        sponsor_bonus: Math.floor(
-          (Number(product.profit) *
-            Number(product.referral_bonus_percent || 0)) /
-            100
-        ),
-        status: "pending",
-      },
-    ]);
+    const { data: transactionBonusData } = await supabase
+      .from("transactions")
+      .select("profit");
 
-    if (error) return alert("Order gagal");
-
-    // Jika produk aktivasi
-    if (product.is_activation && member.status !== "active") {
-      await supabase
-        .from("members")
-        .update({ status: "active" })
-        .eq("id", member.id);
-    }
-
-    alert("Order berhasil");
-    getTransactions();
+    setStats({
+      totalMember: totalMember || 0,
+      totalReferral: totalReferralData?.length || 0,
+      totalSponsorBonus:
+        sponsorBonusData?.reduce((acc, t) => acc + Number(t.sponsor_bonus || 0), 0) || 0,
+      totalTransactionBonus:
+        transactionBonusData?.reduce((acc, t) => acc + Number(t.profit || 0), 0) || 0,
+    });
   };
 
   if (!member)
@@ -93,14 +113,14 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-10">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-10 gap-4">
         <div>
           <h1 className="text-4xl md:text-5xl font-bold text-cyan-400">
             Halo, {member.name}
           </h1>
-          <p className="text-zinc-400 mt-2">Member Code: {member.member_code}</p>
+          <p className="text-zinc-400 mt-1">Member Code: {member.member_code}</p>
         </div>
-        <div>
+        <div className="flex gap-3 items-center">
           <span
             className={`px-4 py-2 rounded-xl font-bold ${
               member.status === "active"
@@ -112,114 +132,93 @@ export default function DashboardPage() {
           >
             {member.status.toUpperCase()}
           </span>
+          <div className="bg-black border border-zinc-700 p-2 rounded-xl">
+            <QRCode value={`https://domainkamu.com/register?ref=${member.member_code}`} size={64} />
+          </div>
         </div>
       </div>
 
-      {/* STATISTIK CEPAT */}
+      {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
         <div className="bg-zinc-900 border border-cyan-500/20 rounded-2xl p-4 text-center">
-          <p className="text-zinc-400">Referral Langsung</p>
-          <p className="text-2xl font-bold text-cyan-400 mt-2">12</p>
+          <p className="text-zinc-400">Total Member</p>
+          <p className="text-2xl font-bold text-cyan-400 mt-2">{stats.totalMember}</p>
         </div>
         <div className="bg-zinc-900 border border-green-500/20 rounded-2xl p-4 text-center">
-          <p className="text-zinc-400">Referral Jaringan</p>
-          <p className="text-2xl font-bold text-green-400 mt-2">58</p>
+          <p className="text-zinc-400">Referral Langsung</p>
+          <p className="text-2xl font-bold text-green-400 mt-2">{stats.totalReferral}</p>
         </div>
         <div className="bg-zinc-900 border border-yellow-500/20 rounded-2xl p-4 text-center">
           <p className="text-zinc-400">Bonus Sponsor</p>
-          <p className="text-2xl font-bold text-yellow-400 mt-2">Rp150.000</p>
+          <p className="text-2xl font-bold text-yellow-400 mt-2">
+            Rp{Number(stats.totalSponsorBonus).toLocaleString()}
+          </p>
         </div>
         <div className="bg-zinc-900 border border-purple-500/20 rounded-2xl p-4 text-center">
           <p className="text-zinc-400">Bonus Transaksi</p>
-          <p className="text-2xl font-bold text-purple-400 mt-2">Rp275.000</p>
+          <p className="text-2xl font-bold text-purple-400 mt-2">
+            Rp{Number(stats.totalTransactionBonus).toLocaleString()}
+          </p>
         </div>
       </div>
 
-      {/* LIVE TRANSAKSI */}
-      <section className="mb-10">
-        <h2 className="text-3xl font-bold text-cyan-400 mb-4">
-          Aktivitas Realtime Member
-        </h2>
-        <div className="relative overflow-hidden bg-zinc-900 border border-cyan-500/20 rounded-3xl p-4">
-          <div className="flex gap-4 w-max animate-[marquee_35s_linear_infinite]">
-            {transactions.map((trx) => (
-              <div
-                key={trx.id}
-                className="min-w-[300px] bg-black border border-zinc-800 rounded-2xl p-4"
-              >
-                <p className="text-zinc-400 text-sm">{trx.category}</p>
-                <h3 className="font-bold mt-1">{trx.member_name}</h3>
-                <p className="text-zinc-400 mt-2">Nominal: Rp{Number(trx.amount).toLocaleString()}</p>
-                <span
-                  className={`px-2 py-1 text-xs rounded-xl font-bold ${
-                    trx.status === "pending"
-                      ? "bg-yellow-500 text-black"
-                      : trx.status === "success"
-                      ? "bg-green-500 text-black"
-                      : "bg-zinc-700 text-white"
-                  }`}
-                >
-                  {trx.status.toUpperCase()}
-                </span>
+      {/* SKEMA JARINGAN MATAHARI */}
+      <section className="relative bg-zinc-900 border border-cyan-500/20 rounded-[40px] overflow-hidden min-h-[650px] flex items-center justify-center mb-10">
+        <div className="absolute w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-3xl"></div>
+        <div className="absolute z-20 w-32 h-32 rounded-full bg-cyan-400 text-black flex flex-col items-center justify-center shadow-[0_0_50px_rgba(34,211,238,0.7)] animate-pulse">
+          <div className="text-3xl">👑</div>
+          <div className="font-black mt-1">ANDA</div>
+        </div>
+        {membersNetwork.map((m, idx) => {
+          const angle = (360 / membersNetwork.length) * idx;
+          const radius = 220;
+          const top = 50 + radius * Math.sin((angle * Math.PI) / 180) / 300 * 100;
+          const left = 50 + radius * Math.cos((angle * Math.PI) / 180) / 300 * 100;
+          return (
+            <div key={m.id} className="absolute z-20" style={{ top: `${top}%`, left: `${left}%`, transform: "translate(-50%, -50%)" }}>
+              <div className="w-24 h-24 rounded-full flex flex-col items-center justify-center text-center border backdrop-blur-xl animate-bounce bg-cyan-500/10 border-cyan-500/30 text-cyan-400">
+                <div className="text-xs font-bold">{m.name}</div>
+                <div className="text-[10px] mt-1">{m.status}</div>
               </div>
-            ))}
-          </div>
+            </div>
+          );
+        })}
+        <div className="absolute bottom-6 left-6 bg-green-500/10 border border-green-500/20 text-green-400 px-5 py-3 rounded-2xl font-bold">
+          Bonus Sponsor = Sekali
+        </div>
+        <div className="absolute bottom-6 right-6 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-5 py-3 rounded-2xl font-bold">
+          Bonus Transaksi = Selamanya
         </div>
       </section>
 
-      {/* PRODUK */}
+      {/* LEADERBOARD */}
       <section className="mb-10">
-        <h2 className="text-3xl font-bold text-cyan-400 mb-4">Produk Digital</h2>
-        {loading ? (
-          <p className="text-zinc-400">Memuat produk...</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-4"
-              >
-                <h3 className="text-xl font-bold text-cyan-400">{product.name}</h3>
-                <p className="text-zinc-400">{product.category}</p>
-                <p className="text-green-400 text-2xl font-bold mt-2">
-                  Rp{Number(product.price).toLocaleString()}
-                </p>
-                <button
-                  onClick={() => handleBuyProduct(product)}
-                  className="w-full mt-4 bg-cyan-400 text-black py-2 rounded-xl font-bold hover:bg-cyan-300 transition"
-                >
-                  Beli Produk
-                </button>
-                {product.is_activation && (
-                  <div className="bg-yellow-500 text-black px-2 py-1 rounded-xl text-xs font-bold mt-2">
-                    AKTIVASI
-                  </div>
-                )}
+        <h2 className="text-3xl font-bold text-cyan-400 mb-4">Top Referral</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {membersNetwork.slice(0, 5).map((m, idx) => (
+            <div key={m.id} className="bg-zinc-900 border border-cyan-500/20 rounded-2xl p-4 flex justify-between">
+              <div>
+                <p className="text-zinc-400 text-sm">Rank #{idx + 1}</p>
+                <h3 className="text-lg font-bold">{m.name}</h3>
               </div>
-            ))}
-          </div>
-        )}
+              <p className="font-bold text-green-400">{Math.floor(Math.random() * 20)} referral</p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* PROFIL & LOGOUT */}
+      {/* LOGOUT */}
       <section>
-        <h2 className="text-3xl font-bold text-cyan-400 mb-4">Profil Member</h2>
-        <div className="bg-zinc-900 border border-cyan-500/20 rounded-3xl p-6">
-          <p>Nama: {member.name}</p>
-          <p>WhatsApp: {member.whatsapp}</p>
-          <p>Kota: {member.kota}</p>
-          <p>Alamat: {member.alamat}</p>
-          <button
-            onClick={() => {
-              localStorage.removeItem("member");
-              window.location.reload();
-            }}
-            className="mt-4 bg-red-500 text-black py-2 px-4 rounded-xl font-bold hover:bg-red-400 transition"
-          >
-            Logout
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            localStorage.removeItem("member");
+            window.location.reload();
+          }}
+          className="bg-red-500 text-black py-2 px-4 rounded-xl font-bold hover:bg-red-400 transition"
+        >
+          Logout
+        </button>
       </section>
     </main>
   );
-            }
+}
